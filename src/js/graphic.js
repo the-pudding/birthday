@@ -20,7 +20,9 @@ function updateDimensions() {
 	$content.st('height', height);
 }
 
-function resize() {}
+function resize() {
+	updateDimensions();
+}
 
 function init() {
 	updateDimensions();
