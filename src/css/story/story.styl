@@ -1,6 +1,49 @@
 /* CUSTOM STORY STYLE */
 
-.test 
-	width 200px
-	height 200px
-	background blue
+.graphic
+	width 100%
+	height 100%
+	display flex
+	flex-direction column
+	// background yellow //debug
+	padding 1rem
+	padding-top 64px
+	&__text
+		// background red //debug
+		width 100%
+		height 100%
+		max-width 50rem
+		margin 0 auto
+	&__chart
+		// background green //debug
+		height 12rem
+		max-width 70rem
+		margin 0 auto
+	&__ui
+		// background blue //debug
+		width 100%
+		height 67%
+		max-width 40rem
+		margin 0 auto
+
+	
+.chart
+	&__canvas
+		display block
+		width 100%
+		height 4rem
+		// background rgb(0,250,0) //debug
+	&__svg
+		display block
+		width 100%
+		height 6rem
+		// background rgb(0,200,0) //debug
+	&__timeline
+		width 100%
+		height 2rem
+		// background rgb(0,150,0) //debug
+	
+
+.is-mobile
+	.desktop
+		display none

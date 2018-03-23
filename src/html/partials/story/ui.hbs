@@ -1,0 +1,15 @@
+{{#each copy.steps}}
+<div class='step ui__step ui__step--{{id}}' data-id={{id}}>
+	{{#if dropdown}}
+	<div class='dropdown'>
+		<select class='month'></select>
+		<select class='day'></select>
+		<p class='desktop'>Or walk it out with arrow keys
+			<span>◀</span>
+			<span>▶</span>
+		</p>
+	</div>
+	{{/if}}
+	<button class='small'>{{{button}}}</button>
+</div>
+{{/each}}

@@ -1,0 +1,41 @@
+.graphic__text
+	position relative	
+.text__step
+	position absolute
+	width 100%
+	top 50%
+	left 0
+	transform translateY(-50%)
+	opacity 0
+	margin 0
+	margin-top 1rem
+	line-height 1.5
+	transition opacity 250ms ease-in-out
+	font-weight 400
+	pointer-events none
+	&.is-visible
+		opacity 1
+		pointer-events auto
+	&.center
+		text-align center
+	+mq('bp-desktop')
+		set-type-size(large, false)
+
+	.spacer
+		display block
+		margin-top 1rem
+	
+	.note
+		display none
+
+	.hint
+		display block
+		margin-top 0.5rem
+		color $gray-dark
+		set-type-size(small, false)
+		+mq('bp-desktop')
+			set-type-size(medium, false)
+	mark
+		background transparent
+		color $primary
+		font-weight 600

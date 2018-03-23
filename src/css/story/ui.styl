@@ -1,0 +1,42 @@
+.graphic__ui
+	position relative
+
+.ui__step
+	position absolute
+	width 100%
+	height 100%
+	top 0
+	left 0
+	opacity 0
+	transition opacity 250ms ease-in-out
+	pointer-events none
+	&.is-visible
+		opacity 1
+		pointer-events auto
+
+	button
+		display block
+		position absolute
+		bottom 1rem
+		left 50%
+		width 16rem
+		padding 0.5rem 0
+		transform translateX(-50%)
+		background-color white
+		font-weight 600
+		border 1px solid $gray-light
+		transition background-color 150ms ease-in-out
+		&:hover
+			background-color $off-white
+
+	.dropdown
+		margin 0 auto
+		text-align center
+		select
+			background-color transparent
+			border none
+			border 1px solid $gray
+			border-radius 0
+			outline 0
+			set-type-size(small, false)
+			// text-align-last center
