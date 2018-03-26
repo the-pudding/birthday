@@ -26,8 +26,11 @@
 		font-weight 600
 		border 1px solid $gray-light
 		transition background-color 150ms ease-in-out
-		&.is-ready
-			background-color $primary
+		cursor pointer
+		background-color $primary
+		&:disabled
+			background-color transparent
+			cursor default
 		&:hover
 			background-color $off-white
 

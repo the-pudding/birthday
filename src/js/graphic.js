@@ -88,7 +88,7 @@ function changeUserInfo() {
 
 	const $btn = $.graphicUi.select('.ui__step--birthday button');
 	$btn.select('.date').text(text);
-	$btn.classed('is-active', text !== '...');
+	$btn.property('disabled', text === '...');
 }
 
 // EVENTS
@@ -129,7 +129,7 @@ function handleDayChange() {
 
 function handleButtonClick() {
 	const $btn = d3.select(this);
-	if ($btn.classed('is-active')) {
+	if (!$btn.property('disabled')) {
 		switch (currentStep) {
 		case 'birthday':
 			db.update({ key: 'day', value: userIndex });
