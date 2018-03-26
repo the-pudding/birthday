@@ -7,10 +7,13 @@ const NUM_TICKS_PER_FRAME = 8;
 const NUM_FRAMES = 4;
 const STEP_PIXELS = 2;
 
+const scale = d3.scaleLinear();
 const info = {};
 const players = [];
 const timePrevious = 0;
 // const framerate = 33;
+
+let width = 0;
 
 function clearContext() {
 	info.context.clearRect(0, 0, info.canvas.width, info.canvas.height);
@@ -23,28 +26,49 @@ function renderPlayer({ srcX, srcY, posX, posY }) {
 		srcY * PLAYER_H,
 		PLAYER_W,
 		PLAYER_H,
-		posX,
+		Math.floor(posX - PLAYER_W / 2),
 		posY,
 		PLAYER_W,
 		PLAYER_H
 	);
 }
 
-function updatePlayer(player) {
-	player.ticks += 1;
-	const target = Math.floor(NUM_TICKS_PER_FRAME / player.speed);
-	if (player.ticks % target === target - 1) {
-		player.frame += 1;
-		if (player.frame >= NUM_FRAMES) player.frame = 0;
-		if (player.state === 0 && player.frame > 1) player.frame = 0;
-		player.ticks = 0;
+function checkUpdateFrame(p) {
+	const target = Math.abs(Math.floor(NUM_TICKS_PER_FRAME / p.speed));
+	// update animation frame
+	if (p.ticks % target === target - 1) {
+		p.frame += 1;
+		if (p.frame >= NUM_FRAMES) p.frame = 0;
+		if (p.state === 0) p.frame = 0;
+		p.ticks = 0;
 	}
-	player.x += STEP_PIXELS * player.speed;
+}
+
+function updatePlayer(p) {
+	if (p.moving) {
+		// frame animation
+		p.ticks += 1;
+		checkUpdateFrame(p);
+
+		// move player
+		const rate = STEP_PIXELS * p.speed;
+		p.x += rate * (p.state === 2 ? 1 : -1);
+		// stop moving
+		const diff = p.destX - p.x;
+		const doneLeft = p.state === 1 && diff > 0;
+		const doneRight = p.state === 2 && diff < 0;
+		if (doneLeft || doneRight) {
+			p.x = p.destX;
+			p.state = 0;
+			p.frame = 0;
+			p.moving = false;
+		}
+	}
 
 	renderPlayer({
-		srcX: player.frame,
-		srcY: player.state,
-		posX: player.x,
+		srcX: p.frame,
+		srcY: p.state,
+		posX: p.x,
 		posY: 0
 	});
 }
@@ -57,6 +81,16 @@ function tick() {
 	clearContext();
 	players.forEach(updatePlayer);
 	window.requestAnimationFrame(tick);
+}
+
+function updateUser(d) {
+	const p = players.find(p => p.id === 'user');
+	p.destDay = d;
+	p.destX = scale(d);
+
+	// moving left or right
+	p.state = p.destX < p.x ? 1 : 2;
+	p.moving = true;
 }
 
 function setupCanvas() {
@@ -85,13 +119,39 @@ function setupCanvas() {
 }
 
 function setupPlayers() {
+	// state 0 = idle, 1 = left, 2 = right
+	// players.push({
+	// 	id: 'russell',
+	// 	state: 0,
+	// 	moving: false,
+	// 	frame: 0,
+	// 	x: scale(319),
+	// 	destX: scale(319),
+	// 	destDay: 319,
+	// 	ticks: 0,
+	// 	speed: 1
+	// });
+
+	const mid = Math.floor(365 / 2);
 	players.push({
-		id: 'russell',
-		state: 2, // 0 = idle, 1 = left, 2 = right
+		id: 'user',
+		state: 0,
+		moving: false,
 		frame: 0,
-		x: 0,
+		x: scale(mid),
+		destX: scale(mid),
+		destDay: mid,
 		ticks: 0,
 		speed: 1
+	});
+}
+
+function resize(w) {
+	width = w;
+	scale.domain([0, 365]).range([PLAYER_W / 2, w - PLAYER_W / 2]);
+	players.forEach(p => {
+		p.destX = scale(p.destDay);
+		p.x = scale(p.destDay);
 	});
 }
 
@@ -106,4 +166,4 @@ function setup() {
 	});
 }
 
-export default { setup };
+export default { setup, resize, updateUser };

@@ -20,6 +20,8 @@ let rawData = null;
 let width = 0;
 let height = 0;
 let mobile = false;
+let userMonth = -1;
+let userDay = -1;
 
 const currentStep = 'birthday';
 
@@ -57,6 +59,7 @@ function updateDimensions() {
 function setCanvasDimensions() {
 	const cw = $.chartCanvas.node().offsetWidth;
 	const ch = $.chartCanvas.node().offsetHeight;
+	render.resize(cw);
 
 	$.chartCanvas.at({
 		width: DPR * cw,
@@ -68,12 +71,69 @@ function setCanvasDimensions() {
 		.scale(DPR, DPR);
 }
 
+function resize() {
+	updateDimensions();
+	setCanvasDimensions();
+}
+
+function changeUserInfo() {
+	let text = null;
+	if (userMonth > -1 && userDay > -1) {
+		const m = monthData[userMonth - 1].name;
+		text = `${m} ${userDay}`;
+		const index = dayData.findIndex(d => d.month === m && d.day === userDay);
+		render.updateUser(index);
+	} else text = '...';
+
+	const $btn = $.graphicUi.select('.ui__step--birthday button');
+	$btn.select('.date').text(text);
+	$btn.classed('is-ready', text !== '...');
+}
+
+// EVENTS
+function handleMonthChange() {
+	const v = this.value;
+	const $day = $.dropdown.select('.day');
+	if (v === '0') {
+		userMonth = -1;
+		$day.node().disabled = true;
+	} else {
+		userMonth = +v;
+		$day.node().disabled = false;
+	}
+	const days = userMonth === -1 ? 0 : monthData[userMonth - 1].days;
+
+	$day.selectAll('option').property('disabled', (d, i) => i > days);
+
+	// edge case
+	if (userDay > days) {
+		userDay = days;
+		$day
+			.selectAll('option')
+			.filter((d, i) => i === days)
+			.property('selected', true);
+	}
+	changeUserInfo();
+}
+
+function handleDayChange() {
+	const v = this.value;
+	if (v === 'Day') {
+		userDay = -1;
+	} else {
+		userDay = +v;
+	}
+	changeUserInfo();
+}
+
+// SETUP
 function setupDropdown() {
 	const months = monthData.map(d => d.name);
 	months.splice(0, 0, 'Month');
 
-	$.dropdown
-		.select('.month')
+	const $month = $.dropdown.select('.month');
+
+	$month
 		.selectAll('option')
 		.data(months)
 		.enter()
@@ -81,22 +141,32 @@ function setupDropdown() {
 		.text(d => d)
 		.at('value', (d, i) => i);
 
+	$month.on('input', handleMonthChange);
+
 	const days = d3.range(31).map(d => d + 1);
 	days.splice(0, 0, 'Day');
 
-	$.dropdown
-		.select('.day')
+	const $day = $.dropdown.select('.day');
+
+	$day
 		.selectAll('option')
 		.data(days)
 		.enter()
 		.append('option')
 		.text(d => d)
 		.at('value', d => d);
+
+	$day.on('input', handleDayChange);
 }
 
-function resize() {
-	updateDimensions();
-	setCanvasDimensions();
+function setupUser() {
+	const index = db.getDay();
+	if (index !== undefined) {
+		const { month, day } = dayData.find(index);
+		const m = monthData.findIndex(d => d.name === month) + 1;
+		userMonth = m;
+		userDay = day;
+	}
 }
 
 function init() {
@@ -109,7 +179,9 @@ function init() {
 		rawData = resp[0];
 		// db.setup();
 		resize();
+		setupUser();
 		render.setup();
+		console.log(dayData);
 	});
 }
 

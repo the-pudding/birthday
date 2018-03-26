@@ -6,11 +6,15 @@ import checkStorage from './check-storage';
 let firebaseApp = null;
 let firebaseDB = null;
 const firebaseID = null;
-let userData = null;
+let userData = {};
 
 const hasStorage = checkStorage('localStorage');
 
-function getUserData() {
+function getDay() {
+	return userData.day;
+}
+
+function setupUserData() {
 	if (hasStorage) {
 		let id = window.localStorage.getItem('pudding_birthday_id');
 		if (!id) {
@@ -42,8 +46,7 @@ function setup() {
 	};
 	firebaseApp = firebase.initializeApp(config);
 	firebaseDB = firebaseApp.database();
-	userData = getUserData();
-	console.log(userData);
+	userData = setupUserData();
 }
 
 function update({ key, value }) {
@@ -79,4 +82,4 @@ function update({ key, value }) {
 // 	});
 // }
 
-export default { setup, update };
+export default { setup, update, getDay };
