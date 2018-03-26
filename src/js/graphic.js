@@ -22,6 +22,7 @@ let height = 0;
 let mobile = false;
 let userMonth = -1;
 let userDay = -1;
+let userIndex = -1;
 
 const currentStep = 'birthday';
 
@@ -81,13 +82,13 @@ function changeUserInfo() {
 	if (userMonth > -1 && userDay > -1) {
 		const m = monthData[userMonth - 1].name;
 		text = `${m} ${userDay}`;
-		const index = dayData.findIndex(d => d.month === m && d.day === userDay);
-		render.updateUser(index);
+		userIndex = dayData.findIndex(d => d.month === m && d.day === userDay);
+		render.updateUser(userIndex);
 	} else text = '...';
 
 	const $btn = $.graphicUi.select('.ui__step--birthday button');
 	$btn.select('.date').text(text);
-	$btn.classed('is-ready', text !== '...');
+	$btn.classed('is-active', text !== '...');
 }
 
 // EVENTS
@@ -126,6 +127,22 @@ function handleDayChange() {
 	changeUserInfo();
 }
 
+function handleButtonClick() {
+	const $btn = d3.select(this);
+	if ($btn.classed('is-active')) {
+		switch (currentStep) {
+		case 'birthday':
+			db.update({ key: 'day', value: userIndex });
+			break;
+
+		default:
+			break;
+		}
+
+		updateStep();
+	}
+}
+
 // SETUP
 function setupDropdown() {
 	const months = monthData.map(d => d.name);
@@ -159,13 +176,26 @@ function setupDropdown() {
 	$day.on('input', handleDayChange);
 }
 
+function setupButton() {
+	$.uiButton.on('click', handleButtonClick);
+}
+
 function setupUser() {
 	const index = db.getDay();
-	if (index !== undefined) {
-		const { month, day } = dayData.find(index);
+	if (typeof index === 'number') {
+		const { month, day } = dayData[index];
 		const m = monthData.findIndex(d => d.name === month) + 1;
 		userMonth = m;
 		userDay = day;
+		$.dropdown
+			.selectAll('.month option')
+			.property('selected', (d, i) => i === userMonth);
+		$.dropdown
+			.selectAll('.day option')
+			.property('selected', (d, i) => i === userDay);
+		$.dropdown.select('.day').property('disabled', false);
+		render.updateUser(index);
+		changeUserInfo();
 	}
 }
 
@@ -173,15 +203,15 @@ function init() {
 	updateDimensions();
 
 	setupDropdown();
+	setupButton();
 	updateStep();
 
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];
-		// db.setup();
+		db.setup();
+		render.setup();
 		resize();
 		setupUser();
-		render.setup();
-		console.log(dayData);
 	});
 }
 

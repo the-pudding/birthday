@@ -5,13 +5,16 @@ import checkStorage from './check-storage';
 
 let firebaseApp = null;
 let firebaseDB = null;
-const firebaseID = null;
 let userData = {};
 
 const hasStorage = checkStorage('localStorage');
 
 function getDay() {
 	return userData.day;
+}
+
+function getGuess() {
+	return userData.guess;
 }
 
 function setupUserData() {
@@ -47,22 +50,25 @@ function setup() {
 	firebaseApp = firebase.initializeApp(config);
 	firebaseDB = firebaseApp.database();
 	userData = setupUserData();
+	console.log(userData);
+}
+
+function closeConnection() {
+	firebaseApp.delete().then(() => console.log('firebase: deleted connection'));
 }
 
 function update({ key, value }) {
 	userData[key] = value;
-	if (hasStorage) window.localStorage.setItem(key, value);
-	console.log(userData);
-	// firebaseDB
-	// 	.ref(firebaseID)
-	// 	.set(data)
-	// 	.then(() => {
-	// 		console.log('added');
-	// 		firebaseApp.delete().then(() => console.log('deleted'));
-	// 	})
-	// 	.catch(err => {
-	// 		console.log(err);
-	// 	});
+	if (hasStorage) window.localStorage.setItem(`pudding_birthday_${key}`, value);
+	const { day, guess, id } = userData;
+	firebaseDB
+		.ref(id)
+		.set({ day, guess })
+		.then(() => {
+			console.log('firebase: data updated');
+			if (key === 'guess') closeConnection();
+		})
+		.catch(console.log);
 }
 
 // function filler() {
@@ -82,4 +88,4 @@ function update({ key, value }) {
 // 	});
 // }
 
-export default { setup, update, getDay };
+export default { setup, update, getDay, getGuess };

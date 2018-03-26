@@ -84,7 +84,7 @@ function tick() {
 }
 
 function updateUser(d) {
-	const p = players.find(p => p.id === 'user');
+	const p = players.find(player => player.id === 'user');
 	p.destDay = d;
 	p.destX = scale(d);
 
@@ -156,12 +156,12 @@ function resize(w) {
 }
 
 function setup() {
+	setupPlayers();
 	loadImage('assets/img/test.png', (err, img) => {
 		info.img = img;
 		info.width = img.width;
 		info.height = img.height;
 		setupCanvas();
-		setupPlayers();
 		tick();
 	});
 }

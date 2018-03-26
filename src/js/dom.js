@@ -8,6 +8,7 @@ const chartCanvas = graphicChart.select('.chart__canvas');
 const chartTimeline = graphicChart.select('.chart__timeline');
 const step = graphic.selectAll('.step');
 const dropdown = graphicUi.select('.dropdown');
+const uiButton = graphicUi.selectAll('button');
 
 export default {
 	content,
@@ -19,5 +20,6 @@ export default {
 	chartCanvas,
 	chartTimeline,
 	step,
-	dropdown
+	dropdown,
+	uiButton
 };
