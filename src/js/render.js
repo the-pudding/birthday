@@ -6,6 +6,10 @@ const PLAYER_H = 64;
 const NUM_TICKS_PER_FRAME = 8;
 const NUM_FRAMES = 4;
 const STEP_PIXELS = 2;
+const LABEL_LINE_HEIGHT = 12;
+const REM = 16;
+const SVG_HEIGHT = REM * 6;
+const RUSSELL_INDEX = 319;
 
 const scale = d3.scaleLinear();
 const info = {};
@@ -14,6 +18,7 @@ const timePrevious = 0;
 // const framerate = 33;
 
 let width = 0;
+const $label = null;
 
 function clearContext() {
 	info.context.clearRect(0, 0, info.canvas.width, info.canvas.height);
@@ -71,6 +76,8 @@ function updatePlayer(p) {
 		posX: p.x,
 		posY: 0
 	});
+
+	p.labelEl.at('transform', `translate(${p.x}, 0)`);
 }
 function tick() {
 	// const timeCurrent = new Date().getTime();
@@ -84,7 +91,7 @@ function tick() {
 }
 
 function updateUser(d) {
-	const p = players.find(player => player.id === 'user');
+	const p = players.find(player => player.id === 'You');
 	p.destDay = d;
 	p.destX = scale(d);
 
@@ -118,23 +125,45 @@ function setupCanvas() {
 	info.context = $.chartCanvas.node().getContext('2d');
 }
 
+function setupSvg() {
+	$.gLabel.at('transform', `translate(0,${SVG_HEIGHT - REM})`);
+}
+
+function createLabel(id) {
+	const el = $.gLabel.append('g.label');
+
+	el
+		.append('text')
+		.text(id)
+		.at('text-anchor', 'middle')
+		.at('y', -REM / 3);
+
+	el.append('line').at({
+		x1: 0,
+		y1: 0,
+		x2: 0,
+		y2: LABEL_LINE_HEIGHT
+	});
+	return el;
+}
 function setupPlayers() {
 	// state 0 = idle, 1 = left, 2 = right
-	// players.push({
-	// 	id: 'russell',
-	// 	state: 0,
-	// 	moving: false,
-	// 	frame: 0,
-	// 	x: scale(319),
-	// 	destX: scale(319),
-	// 	destDay: 319,
-	// 	ticks: 0,
-	// 	speed: 1
-	// });
+	players.push({
+		id: 'Russell',
+		state: 0,
+		moving: false,
+		frame: 0,
+		x: scale(RUSSELL_INDEX),
+		destX: scale(RUSSELL_INDEX),
+		destDay: RUSSELL_INDEX,
+		ticks: 0,
+		speed: 1,
+		labelEl: createLabel('Russell')
+	});
 
 	const mid = Math.floor(365 / 2);
 	players.push({
-		id: 'user',
+		id: 'You',
 		state: 0,
 		moving: false,
 		frame: 0,
@@ -142,7 +171,8 @@ function setupPlayers() {
 		destX: scale(mid),
 		destDay: mid,
 		ticks: 0,
-		speed: 1
+		speed: 1,
+		labelEl: createLabel('You')
 	});
 }
 
@@ -162,6 +192,7 @@ function setup() {
 		info.width = img.width;
 		info.height = img.height;
 		setupCanvas();
+		setupSvg();
 		tick();
 	});
 }

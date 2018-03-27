@@ -1,30 +1,47 @@
-.intro
-	margin 0 auto
-	padding 4rem 1rem 1.5rem 1rem
+.text__step.text__step--intro
+	p
+		set-type-size('root', true)
+		+mq('bp-desktop')
+			set-type-size('medium', true)
 
-	&__hed
-		max-width 60rem
-		margin 0 auto
-		padding-top 5rem
-		font-weight bold
-		text-align center
-		set-type-size('xx-large', true)
-		+mq('bp-2')
-			set-type-size('xxx-large', true)
-		+mq('bp-3')
-			set-type-size('xxxx-large', true)
-	
-	&__byline
-		max-width $column-width
-		margin 0 auto
-		padding-top 5rem
-		padding-bottom 1.5rem
-		text-align center
-		set-type-size('small', true)
+	.intro
+		&__hed
+			margin 0 auto
+			font-weight 600
+			text-align center
+			color $primary
+			text-transform uppercase
+			set-type-size('xx-large', true)
+			+mq('bp-2')
+				set-type-size('xxx-large', true)
+			+mq('bp-3')
+				set-type-size('xxxx-large', true)
 		
-	&__dek
-		max-width $column-width
-		margin 0 auto
-		padding-top 1.5rem
-		text-align center
-		set-type-size('medium', true)
+			.above
+				display block
+				color $gray
+				set-type-size('large', false)
+				+mq('bp-3')
+					set-type-size('x-large', false)
+			.below
+				display block
+				margin-top 0.5rem
+				color $gray
+				set-type-size('large', false)
+				+mq('bp-3')
+					set-type-size('x-large', false)
+			
+		&__byline
+			max-width $column-width
+			margin 0 auto
+			padding-top 3rem
+			padding-bottom 1.5rem
+			text-align center
+			set-type-size('small', true)
+			
+		&__dek
+			max-width $column-width
+			margin 0 auto
+			padding-top 1.5rem
+			text-align center
+			set-type-size('medium', true)

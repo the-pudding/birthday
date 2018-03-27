@@ -18,8 +18,10 @@
 		pointer-events auto
 	&.center
 		text-align center
-	+mq('bp-desktop')
-		set-type-size(large, false)
+	
+	p
+		+mq('bp-desktop')
+			set-type-size(large, false)
 
 	.spacer
 		display block
@@ -39,3 +41,8 @@
 		background transparent
 		color $primary
 		font-weight 600
+
+	.guess--no, .guess--yes
+		display none
+		&.is-visible
+			display inline

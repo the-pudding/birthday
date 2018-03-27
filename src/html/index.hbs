@@ -26,21 +26,7 @@
 	{{> base/header }}
 
 	<main id='content'>
-		<div class='graphic'>
-			<div class='graphic__text'>
-				{{> story/text}}
-			</div>
-			<div class='graphic__chart'>
-				<svg class='chart__svg'></svg>
-				<canvas class='chart__canvas'></canvas>
-				<div class='chart__timeline'>
-					{{> story/timeline}}
-				</div>
-			</div>
-			<div class='graphic__ui'>
-				{{> story/ui}}
-			</div>
-		</div>
+		{{> story/graphic}}
 	</main>
 
 	<script src='{{basepath}}assets/scripts/d3.v4.12.0+jetpack.min.js'></script>

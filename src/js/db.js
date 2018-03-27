@@ -28,7 +28,7 @@ function setupUserData() {
 		let day = window.localStorage.getItem('pudding_birthday_day');
 		day = day ? +day : null;
 
-		let guess = window.localStorage.getItem('pudding_birthguess_guess');
+		let guess = window.localStorage.getItem('pudding_birthday_guess');
 		guess = guess ? +guess : null;
 
 		return { id, day, guess };
@@ -66,7 +66,6 @@ function update({ key, value }) {
 		.set({ day, guess })
 		.then(() => {
 			console.log('firebase: data updated');
-			if (key === 'guess') closeConnection();
 		})
 		.catch(console.log);
 }
@@ -88,4 +87,4 @@ function update({ key, value }) {
 // 	});
 // }
 
-export default { setup, update, getDay, getGuess };
+export default { setup, update, getDay, getGuess, closeConnection };

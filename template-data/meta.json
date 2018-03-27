@@ -2,15 +2,15 @@
 	"title": "Title Case Headline Goes Here",
 	"description":
 		"Your dek goes here. It is probably one or two sentences that succinctly describe more explicitly what the story will be about.",
-	"url": "https://pudding.cool/year/month/name/",
+	"url": "https://pudding.cool/2018/04/birthday-paradox/",
 	"keywords": "tk",
 	"imgFacebook":
-		"https://pudding.cool/year/month/name/assets/social/social-facebook.jpg",
+		"https://pudding.cool/2018/04/birthday-paradox/assets/social/social-facebook.jpg",
 	"imgTwitter":
-		"https://pudding.cool/year/month/name/assets/social/social-twitter.jpg",
+		"https://pudding.cool/2018/04/birthday-paradox/assets/social/social-twitter.jpg",
 	"author": {
-		"name": "Author Name",
-		"url": "https://twitter.com/puddingviz",
-		"twitterHandle": "@puddingviz"
+		"name": "Russell Goldenberg",
+		"url": "https://twitter.com/codenberg",
+		"twitterHandle": "@codenberg"
 	}
 }
