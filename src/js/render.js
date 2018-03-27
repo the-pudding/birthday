@@ -1,5 +1,8 @@
 import loadImage from './utils/load-image';
 import $ from './dom';
+import flattenMonthData from './flatten-month-data';
+
+const dayData = flattenMonthData();
 
 const PLAYER_W = 32;
 const PLAYER_H = 64;
@@ -14,8 +17,9 @@ const RUSSELL_INDEX = 319;
 const scale = d3.scaleLinear();
 const info = {};
 const players = [];
-const timePrevious = 0;
-// const framerate = 33;
+
+let recentData = null;
+let tallyData = null;
 
 let width = 0;
 const $label = null;
@@ -50,7 +54,7 @@ function checkUpdateFrame(p) {
 }
 
 function updatePlayer(p) {
-	if (p.moving) {
+	if (p.state) {
 		// frame animation
 		p.ticks += 1;
 		checkUpdateFrame(p);
@@ -66,7 +70,6 @@ function updatePlayer(p) {
 			p.x = p.destX;
 			p.state = 0;
 			p.frame = 0;
-			p.moving = false;
 		}
 	}
 
@@ -97,7 +100,65 @@ function updateUser(d) {
 
 	// moving left or right
 	p.state = p.destX < p.x ? 1 : 2;
-	p.moving = true;
+}
+
+function createLabel({ id, showLabel, day }) {
+	const match = dayData[day];
+	const date = `${match.month.slice(0, 3)} ${match.day}`;
+	const el = $.gLabel.append('g.label');
+	el.classed('is-visible', showLabel);
+
+	el
+		.append('text.id')
+		.text(id)
+		.at('text-anchor', 'middle')
+		.at('y', -REM * 1.33);
+
+	el
+		.append('text.date')
+		.text(date)
+		.at('text-anchor', 'middle')
+		.at('y', -REM * 0.33);
+
+	el.append('line').at({
+		x1: 0,
+		y1: 0,
+		x2: 0,
+		y2: LABEL_LINE_HEIGHT
+	});
+	return el;
+}
+
+function createPlayer({
+	id,
+	day,
+	state = 1,
+	speed = 1,
+	off = true,
+	showLabel = false
+}) {
+	const p = {
+		id,
+		speed,
+		state,
+		frame: 0,
+		ticks: 0,
+		x: off ? -PLAYER_W : scale(day),
+		destX: scale(day),
+		destDay: day,
+		labelEl: createLabel({ id, showLabel, day })
+	};
+	players.push(p);
+}
+function popRecentPlayer() {
+	const r = recentData.pop();
+	players.forEach(p => p.labelEl.classed('is-visible', false));
+	createPlayer({
+		id: r.ago,
+		day: r.day,
+		state: 2,
+		showLabel: true
+	});
 }
 
 function setupCanvas() {
@@ -129,51 +190,16 @@ function setupSvg() {
 	$.gLabel.at('transform', `translate(0,${SVG_HEIGHT - REM})`);
 }
 
-function createLabel(id) {
-	const el = $.gLabel.append('g.label');
-
-	el
-		.append('text')
-		.text(id)
-		.at('text-anchor', 'middle')
-		.at('y', -REM / 3);
-
-	el.append('line').at({
-		x1: 0,
-		y1: 0,
-		x2: 0,
-		y2: LABEL_LINE_HEIGHT
-	});
-	return el;
-}
 function setupPlayers() {
-	// state 0 = idle, 1 = left, 2 = right
-	players.push({
+	createPlayer({
 		id: 'Russell',
+		day: RUSSELL_INDEX,
+		off: false,
 		state: 0,
-		moving: false,
-		frame: 0,
-		x: scale(RUSSELL_INDEX),
-		destX: scale(RUSSELL_INDEX),
-		destDay: RUSSELL_INDEX,
-		ticks: 0,
-		speed: 1,
-		labelEl: createLabel('Russell')
+		showLabel: true
 	});
-
 	const mid = Math.floor(365 / 2);
-	players.push({
-		id: 'You',
-		state: 0,
-		moving: false,
-		frame: 0,
-		x: scale(mid),
-		destX: scale(mid),
-		destDay: mid,
-		ticks: 0,
-		speed: 1,
-		labelEl: createLabel('You')
-	});
+	createPlayer({ id: 'You', day: mid, off: false, state: 0, showLabel: true });
 }
 
 function resize(w) {
@@ -185,7 +211,10 @@ function resize(w) {
 	});
 }
 
-function setup() {
+function setup({ recent, tally }) {
+	recentData = recent;
+	console.log(recentData);
+	tallyData = tally;
 	setupPlayers();
 	loadImage('assets/img/test.png', (err, img) => {
 		info.img = img;
@@ -197,4 +226,4 @@ function setup() {
 	});
 }
 
-export default { setup, resize, updateUser };
+export default { setup, resize, updateUser, popRecentPlayer };

@@ -46,11 +46,25 @@
 
 .chart__svg
 	.g-label
-		text
+		// 
+	.label
+		opacity 0
+		transition opacity 250ms ease-in-out
+		&.is-visible
+			opacity 1
+
+		.id
 			set-type-size(xx-small, false)
 			text-transform uppercase
 			letter-spacing 0.05em
 			fill $gray
+
+		.date
+			set-type-size(xx-small, false)
+			text-transform uppercase
+			letter-spacing 0.05em
+			fill $gray-dark
+			font-weight 600
 
 		line
 			stroke $gray

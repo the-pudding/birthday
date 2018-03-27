@@ -1,6 +1,6 @@
 export default function idToTimestamp(i) {
 	const n = i.replace(/[a-z]/g, '');
-	const l = r.toString().length;
+	const l = n.toString().length;
 	const f = parseInt(
 		d3
 			.range(l)

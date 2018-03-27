@@ -12,11 +12,9 @@ import monthData from './month-data';
 const BP = 800;
 const VERSION = new Date().getTime();
 const DATA_URL = `https://pudding.cool/2018/04/birthday-data/data.json?version=${VERSION}`;
-const REM = 16;
 const DPR = Math.min(window.devicePixelRatio, 2);
 const RUSSELL_INDEX = 319;
 const SECOND = 1000;
-// const HEADER_HEIGHT = REM * 4;
 
 const dayData = flattenMonthData();
 let rawData = null;
@@ -27,9 +25,9 @@ let userMonth = -1;
 let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
-let ready = false;
+// let ready = false;
 
-let currentStep = 'intro';
+let currentStep = 'paradox';
 
 const steps = {
 	intro: () => {
@@ -69,14 +67,25 @@ const steps = {
 		delayedButton();
 	},
 	believe: () => {
-		delayedButton();
+		// release 1 every X seconds
+		let i = 0;
+		const release = () => {
+			render.popRecentPlayer();
+			if (i < 23) {
+				i++;
+				setTimeout(release, 1000);
+			} else {
+				delayedButton(0);
+			}
+		};
+		release();
 	},
 	believeYes: () => {},
 	believeNo: () => {},
 	run: () => {}
 };
 
-function delayedButton(delay = SECOND * 3) {
+function delayedButton(delay = SECOND * 2) {
 	const $btn = getStepButtonEl();
 	setTimeout(() => {
 		$btn.property('disabled', false);
@@ -234,6 +243,9 @@ function handleButtonClick() {
 		case 'paradox':
 			currentStep = 'believe';
 			break;
+		case 'believe':
+			//
+			break;
 		default:
 			break;
 		}
@@ -340,10 +352,10 @@ function init() {
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];
 		db.setup();
-		render.setup();
+		render.setup(rawData);
 		resize();
 		setupUser();
-		ready = true;
+		// ready = true;
 		steps.intro();
 	});
 }
