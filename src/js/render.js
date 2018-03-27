@@ -16,10 +16,7 @@ const RUSSELL_INDEX = 319;
 
 const scale = d3.scaleLinear();
 const info = {};
-const players = [];
-
-let recentData = null;
-let tallyData = null;
+let players = [];
 
 let width = 0;
 const $label = null;
@@ -70,6 +67,7 @@ function updatePlayer(p) {
 			p.x = p.destX;
 			p.state = 0;
 			p.frame = 0;
+			if (p.id !== 'You') p.labelEl.classed('is-visible', false);
 		}
 	}
 
@@ -93,11 +91,14 @@ function tick() {
 	window.requestAnimationFrame(tick);
 }
 
-function updateUser(d) {
+function updateUser(day) {
 	const p = players.find(player => player.id === 'You');
-	p.destDay = d;
-	p.destX = scale(d);
+	p.destDay = day;
+	p.destX = scale(day);
 
+	const match = dayData[day];
+	const date = `${match.month.slice(0, 3)} ${match.day}`;
+	p.labelEl.select('.date').text(date);
 	// moving left or right
 	p.state = p.destX < p.x ? 1 : 2;
 }
@@ -150,15 +151,23 @@ function createPlayer({
 	};
 	players.push(p);
 }
-function popRecentPlayer() {
-	const r = recentData.pop();
-	players.forEach(p => p.labelEl.classed('is-visible', false));
+function addRecentPlayer({ player, speed = 1 }) {
 	createPlayer({
-		id: r.ago,
-		day: r.day,
+		id: player.ago,
+		day: player.day,
 		state: 2,
-		showLabel: true
+		showLabel: speed < 8,
+		speed
 	});
+}
+
+function removePlayers() {
+	players = [];
+	$.gLabel.selectAll('.label').remove();
+}
+
+function hideSpecialLabels() {
+	players.forEach(p => p.labelEl.classed('is-visible', false));
 }
 
 function setupCanvas() {
@@ -211,10 +220,7 @@ function resize(w) {
 	});
 }
 
-function setup({ recent, tally }) {
-	recentData = recent;
-	console.log(recentData);
-	tallyData = tally;
+function setup() {
 	setupPlayers();
 	loadImage('assets/img/test.png', (err, img) => {
 		info.img = img;
@@ -226,4 +232,11 @@ function setup({ recent, tally }) {
 	});
 }
 
-export default { setup, resize, updateUser, popRecentPlayer };
+export default {
+	setup,
+	resize,
+	updateUser,
+	addRecentPlayer,
+	removePlayers,
+	hideSpecialLabels
+};

@@ -25,6 +25,8 @@ let userMonth = -1;
 let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
+let userMatch = null;
+const userTally = [];
 // let ready = false;
 
 let currentStep = 'paradox';
@@ -68,27 +70,96 @@ const steps = {
 	},
 	believe: () => {
 		// release 1 every X seconds
+		const $btn = getStepButtonEl();
+		$btn.classed('is-hidden', true);
+		render.hideSpecialLabels();
 		let i = 0;
+		const speed = 2;
 		const release = () => {
-			render.popRecentPlayer();
-			if (i < 23) {
-				i++;
-				setTimeout(release, 1000);
-			} else {
-				delayedButton(0);
+			const dict = [];
+			const r = rawData.recent.pop();
+
+			dict[RUSSELL_INDEX] = true;
+			dict[userDay] = true;
+
+			if (dict[r.day]) userMatch = r.day;
+			else dict[r.day] = true;
+
+			render.addRecentPlayer({ player: r, speed });
+			i += 1;
+			if (i < 21) setTimeout(release, SECOND / speed);
+			else {
+				currentStep = 'result';
+				setTimeout(updateStep, SECOND);
 			}
 		};
-		release();
+		setTimeout(release, SECOND * 3);
 	},
-	believeYes: () => {},
-	believeNo: () => {},
-	run: () => {}
+	result: () => {
+		const $text = getStepTextEl();
+		$text.select('.result--no').classed('is-visible', !userMatch);
+		$text.select('.result--yes').classed('is-visible', userMatch);
+		delayedButton();
+	},
+	more: () => {
+		const $btn = getStepButtonEl();
+		$btn.classed('is-hidden', true);
+
+		const $text = getStepTextEl();
+
+		let group = 0;
+		const times = 19;
+		let i = 0;
+		let speed = 2;
+		let dict = [];
+
+		const release = () => {
+			const player = rawData.recent.pop();
+			if (dict[player.day]) userTally[group] = player.day;
+			else dict[player.day] = true;
+
+			render.addRecentPlayer({ player, speed });
+
+			i += 1;
+			if (i < 23) setTimeout(release, SECOND / speed);
+			else {
+				group += 1;
+				if (group < times) {
+					dict = [];
+					i = 0;
+					userTally[group] = null;
+					if (group === 1) {
+						speed = 4;
+						$text.select('.speed--1').classed('is-visible', true);
+					} else if (group === 2) {
+						speed = 8;
+						$text.select('.speed--2').classed('is-visible', true);
+					} else if (group === 3) speed = 16;
+					else if (group === 4) {
+						speed = 32;
+						$text.select('.speed--3').classed('is-visible', true);
+					}
+					setTimeout(() => {
+						render.removePlayers();
+						release();
+					}, SECOND / speed);
+				} else {
+					console.log(userTally);
+					// TODO currentStep update here
+				}
+			}
+		};
+
+		render.removePlayers();
+		userTally[0] = null;
+		setTimeout(release, SECOND * 3);
+	}
 };
 
 function delayedButton(delay = SECOND * 2) {
 	const $btn = getStepButtonEl();
 	setTimeout(() => {
-		$btn.property('disabled', false);
+		$btn.prop('disabled', false);
 	}, delay);
 }
 
@@ -163,7 +234,7 @@ function changeUserInfo() {
 
 	const $btn = $.graphicUi.select('.ui__step--birthday button');
 	$btn.select('.date').text(text);
-	$btn.property('disabled', text === '...');
+	$btn.prop('disabled', text === '...');
 }
 
 // EVENTS
@@ -179,7 +250,7 @@ function handleMonthChange() {
 	}
 	const days = userMonth === -1 ? 0 : monthData[userMonth - 1].days;
 
-	$day.selectAll('option').property('disabled', (d, i) => i > days);
+	$day.selectAll('option').prop('disabled', (d, i) => i > days);
 
 	// edge case
 	if (userDay > days) {
@@ -187,7 +258,7 @@ function handleMonthChange() {
 		$day
 			.selectAll('option')
 			.filter((d, i) => i === days)
-			.property('selected', true);
+			.prop('selected', true);
 	}
 	changeUserInfo();
 }
@@ -207,12 +278,12 @@ function handleSlide(a) {
 	userGuess = val;
 	const $btn = getStepButtonEl();
 	$btn.select('.people').text(`${val} people`);
-	$btn.property('disabled', false);
+	$btn.prop('disabled', false);
 }
 
 function handleButtonClick() {
 	const $btn = d3.select(this);
-	if (!$btn.property('disabled')) {
+	if (!$btn.prop('disabled')) {
 		switch (currentStep) {
 		case 'intro':
 			currentStep = 'birthday';
@@ -243,8 +314,8 @@ function handleButtonClick() {
 		case 'paradox':
 			currentStep = 'believe';
 			break;
-		case 'believe':
-			//
+		case 'result':
+			currentStep = 'more';
 			break;
 		default:
 			break;
@@ -320,11 +391,11 @@ function setupUser() {
 		userDay = day;
 		$.dropdown
 			.selectAll('.month option')
-			.property('selected', (d, i) => i === userMonth);
+			.prop('selected', (d, i) => i === userMonth);
 		$.dropdown
 			.selectAll('.day option')
-			.property('selected', (d, i) => i === userDay);
-		$.dropdown.select('.day').property('disabled', false);
+			.prop('selected', (d, i) => i === userDay);
+		$.dropdown.select('.day').prop('disabled', false);
 		render.updateUser(index);
 		userGuess = db.getGuess();
 		if (userGuess) {
@@ -334,7 +405,7 @@ function setupUser() {
 				.noUiSlider.set(userGuess);
 			const $btn = $.graphicUi.select('.ui__step--guess button');
 			$btn.select('.people').text(userGuess);
-			$btn.property('disabled', false);
+			$btn.prop('disabled', false);
 		}
 
 		changeUserInfo();
