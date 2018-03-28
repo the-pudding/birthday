@@ -108,7 +108,7 @@ const steps = {
 		delayedButton();
 	},
 	more: () => {
-		$.uiSvg.classed('is-visible', true);
+		$.svgTally.classed('is-visible', true);
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
 
@@ -132,13 +132,13 @@ const steps = {
 
 			// last one has been placed
 			const next = d => {
-				currentStep = 'result';
+				currentStep = 'all';
 				updateStep();
 			};
 
 			const cb = i === 22 && group === times - 1 ? next : null;
 
-			render.addRecentPlayer({ player, speed, balloon }, cb);
+			render.addRecentPlayer({ player, speed, balloon, hideLabel: true }, cb);
 
 			i += 1;
 			if (i < 23) setTimeout(release, SECOND / speed);
@@ -170,6 +170,11 @@ const steps = {
 
 		render.removePlayers();
 		setTimeout(release, SECOND * 3);
+	},
+	all: () => {
+		$.svgTally.classed('is-visible', true);
+		const $btn = getStepButtonEl();
+		$btn.classed('is-hidden', true);
 	}
 };
 
@@ -209,7 +214,7 @@ function updateStep() {
 	const $s = getStepEl();
 	const id = $s.at('data-id');
 	$.graphicChart.classed('is-visible', id !== 'intro');
-	$.uiSvg.classed('is-visible', false);
+	$.svgTally.classed('is-visible', false);
 	steps[id]();
 	$.step.classed('is-visible', false);
 	$s.classed('is-visible', true);
@@ -315,7 +320,7 @@ function handleButtonClick() {
 
 		case 'guess':
 			db.update({ key: 'guess', value: userGuess });
-			currentStep = 'guess';
+			$.graphicUi.classed('is-short', true);
 			currentStep =
 					userGuess === 23
 						? 'guessExact'

@@ -3,14 +3,15 @@
 		{{> story/text}}
 	</div>
 	<div class='graphic__chart'>
-		<svg class='chart__svg'>
-			<g class='g-label'>
-
-			</g>
-			<g class='g-arc'>
-
-			</g>
-		</svg>
+		<div class='chart__svg'>
+			<svg class='svg__label'>
+				<g class='g-label'></g>
+			</svg>
+			<svg class='svg__tally'>
+				<g class='g-axis'></g>
+				<g class='g-tally'></g>
+			</svg>
+		</div>
 		<canvas class='chart__canvas'></canvas>
 		<div class='chart__timeline'>
 			{{> story/timeline}}
@@ -18,10 +19,6 @@
 		<div class='chart__balloon'></div>
 	</div>
 	<div class='graphic__ui'>
-		<svg class='ui__svg'>
-			<g class='g-axis'></g>
-			<g class='g-tally'></g>
-		</svg>
 		{{> story/ui}}
 	</div>
 </div>

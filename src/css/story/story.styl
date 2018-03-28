@@ -18,7 +18,7 @@ main
 	&__chart
 		// background green //debug
 		position relative
-		height 12rem
+		height 16rem
 		max-width 70rem
 		margin 0 auto
 		opacity 0
@@ -31,7 +31,9 @@ main
 		height 67%
 		max-width 40rem
 		margin 0 auto
-
+		transition height 500ms ease-in-out
+		&.is-short
+			height 20%
 	
 .chart
 	&__canvas
@@ -42,7 +44,14 @@ main
 	&__svg
 		display block
 		width 100%
-		height 6rem
+		height 10rem
+		position relative
+		svg
+			position absolute
+			top 0
+			left 0
+			width 100%
+			height 100%
 		// background rgb(0,200,0) //debug
 	&__timeline
 		width 100%
@@ -57,10 +66,7 @@ main
 		transform translateY(-6rem)
 		// background rgb(0,100, 0) // debug
 	
-
-.chart__svg
-	.g-label
-		// 
+.svg__label
 	.label
 		opacity 0
 		transition opacity 250ms ease-in-out
@@ -87,7 +93,7 @@ main
 	img
 		display block
 		position absolute
-		top 10rem
+		top 14rem
 		left 0
 		width 3rem
 		height 3rem

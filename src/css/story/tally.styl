@@ -1,8 +1,10 @@
-.ui__svg
+.chart__svg .svg__tally
 	display none
 	position absolute
 	top 0
-	left 0
+	left 50%
+	max-width 40rem
+	transform translateX(-50%)
 	set-index('top')
 	&.is-visible
 		display block
@@ -20,6 +22,8 @@
 				display none
 			text
 				fill $gray
+			&:nth-child(3)
+				display none
 		path
 			display none
 	.axis--y

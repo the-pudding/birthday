@@ -12,14 +12,15 @@ const chartBalloon = graphicChart.select('.chart__balloon');
 
 const step = graphic.selectAll('.step');
 
-const uiSvg = graphicUi.select('.ui__svg');
+const svgLabel = chartSvg.select('.svg__label');
+const svgTally = chartSvg.select('.svg__tally');
+
 const uiButton = graphicUi.selectAll('button');
 const dropdown = graphicUi.select('.dropdown');
 const slider = graphicUi.select('.slider');
 
-const gLabel = chartSvg.select('.g-label');
-const gArc = chartSvg.select('.g-arc');
-const gTally = uiSvg.select('.g-tally');
+const gLabel = svgLabel.select('.g-label');
+const gTally = svgTally.select('.g-tally');
 
 export default {
 	content,
@@ -34,9 +35,9 @@ export default {
 	step,
 	dropdown,
 	uiButton,
-	gLabel,
-	gArc,
-	gTally,
 	slider,
-	uiSvg
+	svgTally,
+	svgLabel,
+	gLabel,
+	gTally
 };

@@ -13,8 +13,8 @@ const NUM_FRAMES = 4;
 const STEP_PIXELS = 2;
 const LABEL_LINE_HEIGHT = 12;
 const REM = 16;
-const SVG_HEIGHT = REM * 6;
 const RUSSELL_INDEX = 319;
+const SVG_HEIGHT = REM * 10;
 
 const scale = d3.scaleLinear();
 const info = {};
@@ -179,12 +179,16 @@ function createPlayer({
 	};
 	players.push(p);
 }
-function addRecentPlayer({ player, speed = 1, balloon = false }, cb = null) {
+function addRecentPlayer(
+	{ player, speed = 1, balloon = false, hideLabel = false },
+	cb = null
+) {
+	const showLabel = hideLabel ? false : speed < 4;
 	createPlayer({
 		id: player.ago,
 		day: player.day,
 		state: 2,
-		showLabel: speed < 8,
+		showLabel,
 		speed,
 		alpha: 0.5,
 		balloon,

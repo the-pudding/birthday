@@ -5,9 +5,9 @@ const SECOND = 1000;
 const REM = 16;
 const FONT_SIZE = 12;
 const BUTTON_HEIGHT = REM * 5;
-const MARGIN = { top: REM, bottom: REM * 2, left: REM * 3, right: REM };
+const MARGIN = { top: REM, bottom: REM * 3, left: REM * 3.25, right: REM };
+const height = 10 * REM - MARGIN.top - MARGIN.bottom;
 let width = 0;
-let height = 0;
 const rawData = [];
 let data = null;
 const scale = { x: d3.scaleLinear(), y: d3.scaleLinear() };
@@ -46,15 +46,17 @@ function update(match) {
 
 	const successCount = rawData.filter(d => d).length;
 	const failureCount = rawData.length - successCount;
+	const successSuffix = successCount === 1 ? '' : 'es';
+	const failureSuffix = failureCount === 1 ? '' : 's';
 	$.gTally
 		.selectAll('.success')
 		.html(
-			`<tspan class='count'>${successCount}</tspan> <tspan>successes</tspan>`
+			`<tspan class='count'>${successCount}</tspan> <tspan>success${successSuffix}</tspan>`
 		);
 	$.gTally
 		.selectAll('.failure')
 		.html(
-			`<tspan class='count'>${failureCount}</tspan> <tspan>failures</tspan>`
+			`<tspan class='count'>${failureCount}</tspan> <tspan>failure${failureSuffix}</tspan>`
 		);
 }
 
@@ -65,13 +67,12 @@ function matchFirst() {
 function resize() {
 	const n = $.graphicUi.node();
 	width = n.offsetWidth - MARGIN.left - MARGIN.right;
-	height = n.offsetHeight - BUTTON_HEIGHT - MARGIN.top - MARGIN.bottom;
 	const w = width + MARGIN.left + MARGIN.right;
 	const h = height + MARGIN.top + MARGIN.bottom;
-	$.uiSvg.at({ width: w, height: h });
+	$.svgTally.at({ width: w, height: h });
 	scale.x.range([0, width]);
 	scale.y.range([height, 0]);
-	const $x = $.uiSvg.select('.axis--x');
+	const $x = $.svgTally.select('.axis--x');
 	$x.select('.label').at('transform', `translate(${width / 2}, 0)`);
 
 	const axisX = d3.axisBottom().scale(scale.x);
@@ -80,7 +81,7 @@ function resize() {
 		.call(axisX)
 		.at('transform', `translate(${MARGIN.left},${MARGIN.top + height})`);
 
-	const $y = $.uiSvg.select('.axis--y');
+	const $y = $.svgTally.select('.axis--y');
 
 	$y
 		.select('.label')
@@ -90,6 +91,8 @@ function resize() {
 		.axisLeft()
 		.scale(scale.y)
 		.tickSize(-width)
+		.tickPadding(FONT_SIZE / 2)
+		.tickValues([0, 0.25, 0.5, 0.75, 1])
 		.tickFormat(d3.format('.0%'));
 
 	$y.call(axisY).at('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
@@ -106,7 +109,7 @@ function resize() {
 
 function setup(count) {
 	$.gTally.at('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
-	const $axis = $.uiSvg.select('g.g-axis');
+	const $axis = $.svgTally.select('g.g-axis');
 	const $x = $axis.append('g.axis--x');
 	const $y = $axis.append('g.axis--y');
 
@@ -114,7 +117,7 @@ function setup(count) {
 		.append('text.label')
 		.text('Number of trials')
 		.at('text-anchor', 'middle')
-		.at('y', MARGIN.bottom);
+		.at('y', MARGIN.bottom - REM);
 	$y
 		.append('text.label')
 		.text('Success rate')
