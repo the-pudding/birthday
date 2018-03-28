@@ -1,14 +1,6 @@
 {{#each copy.steps}}
 <div class='step text__step text__step--{{id}} {{class}}' data-id={{id}}>
-	{{#if intro}}
-	<h1 class='intro__hed'>{{{hed}}}</h1>
-	<p class='intro__dek'>{{dek}}</p>
-	<p class='intro__byline'>By
-		<a href='{{@root.meta.author.url}}' target='_blank'>
-			<strong>{{@root.meta.author.name}}</strong>
-		</a>
-	</p>
-	{{else}}
+	{{#if intro}} {{> story/intro}} {{else}}
 	<p>{{{text}}}</p>
 	{{/if}}
 </div>

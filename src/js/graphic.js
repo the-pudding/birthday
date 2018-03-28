@@ -29,7 +29,7 @@ let userMatch = null;
 const userTally = [];
 // let ready = false;
 
-let currentStep = 'paradox';
+let currentStep = 'intro';
 
 const steps = {
 	intro: () => {

@@ -1,4 +1,7 @@
 .text__step.text__step--intro
+	top auto
+	bottom 0
+	transform translateY(0)
 	p
 		set-type-size('root', true)
 		+mq('bp-desktop')
@@ -14,28 +17,57 @@
 			set-type-size('xx-large', true)
 			+mq('bp-2')
 				set-type-size('xxx-large', true)
-			+mq('bp-3')
-				set-type-size('xxxx-large', true)
-		
+			span
+				letter-spacing 0.05em
+			.birthday span
+				&:nth-child(6n+1)
+					color $red
+				&:nth-child(6n+2)
+					color $orange
+				&:nth-child(6n+3)
+					color $yellow
+				&:nth-child(6n+4)
+					color $green
+				&:nth-child(6n+5)
+					color $blue
+				&:nth-child(6n+6)
+					color $violet
+			.paradox span
+				&:nth-child(6n+1)
+					color $yellow
+				&:nth-child(6n+2)
+					color $green
+				&:nth-child(6n+3)
+					color $blue
+				&:nth-child(6n+4)
+					color $violet
+				&:nth-child(6n+5)
+					color $red
+				&:nth-child(6n+6)
+					color $orange
+			.birthday, .paradox
+				display inline-block
+				text-shadow 0 0 2px $off-black
 			.above
 				display block
-				color $gray
-				set-type-size('large', false)
+				color $gray-light
+				text-shadow 0 0 1px $off-black
+				set-type-size('root', false)
 				+mq('bp-3')
-					set-type-size('x-large', false)
+					set-type-size('large', false)
 			.below
 				display block
 				margin-top 0.5rem
-				color $gray
-				set-type-size('large', false)
+				color $gray-light
+				text-shadow 0 0 1px $off-black
+				set-type-size('root', false)
 				+mq('bp-3')
-					set-type-size('x-large', false)
+					set-type-size('large', false)
 			
 		&__byline
 			max-width $column-width
 			margin 0 auto
-			padding-top 3rem
-			padding-bottom 1.5rem
+			padding-top 1.5rem
 			text-align center
 			set-type-size('small', true)
 			
