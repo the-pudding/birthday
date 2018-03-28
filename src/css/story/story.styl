@@ -17,9 +17,14 @@ main
 		margin 0 auto
 	&__chart
 		// background green //debug
+		position relative
 		height 12rem
 		max-width 70rem
 		margin 0 auto
+		opacity 0
+		transition opacity 1s ease-in-out
+		&.is-visible
+			opacity 1
 	&__ui
 		// background blue //debug
 		width 100%
@@ -43,6 +48,14 @@ main
 		width 100%
 		height 2rem
 		// background rgb(0,150,0) //debug
+	&__balloon
+		position absolute
+		top 0
+		left 0
+		width 100%
+		height 100%
+		transform translateY(-6rem)
+		// background rgb(0,100, 0) // debug
 	
 
 .chart__svg
@@ -69,3 +82,31 @@ main
 
 		line
 			stroke $gray
+
+.chart__balloon
+	img
+		display block
+		position absolute
+		top 10rem
+		left 0
+		width 3rem
+		height 3rem
+		transform translateX(-50%)
+		opacity 0
+		&.is-float
+			animation float 1s ease-in forwards
+
+@keyframes float
+	0%
+		opacity 0
+		transform translate(-50%, 0)
+	33%
+		opacity 1
+	67%
+		opacity 1
+	100%
+		opacity 0
+		transform translate(-50%, -12rem)
+
+svg text
+	font-family $sans

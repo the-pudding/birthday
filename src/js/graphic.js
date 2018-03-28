@@ -1,13 +1,12 @@
 // D3 is included by globally by default
 import * as noUiSlider from 'nouislider';
 import db from './db';
-import flattenMonthData from './flatten-month-data';
-import calculateOdds from './calculate-odds';
+import tally from './tally';
 import render from './render';
 import $ from './dom';
+import flattenMonthData from './flatten-month-data';
+import calculateOdds from './calculate-odds';
 import monthData from './month-data';
-
-// import monthData from './month-data';
 
 const BP = 800;
 const VERSION = new Date().getTime();
@@ -25,8 +24,6 @@ let userMonth = -1;
 let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
-let userMatch = null;
-const userTally = [];
 // let ready = false;
 
 let currentStep = 'intro';
@@ -75,33 +72,43 @@ const steps = {
 		render.hideSpecialLabels();
 		let i = 0;
 		const speed = 2;
+		const dict = [];
+		dict[RUSSELL_INDEX] = true;
+		dict[userIndex] = true;
+		let matched = false;
+
 		const release = () => {
-			const dict = [];
-			const r = rawData.recent.pop();
+			const player = rawData.recent.pop();
+			let balloon = false;
+			if (dict[player.day]) {
+				matched = true;
+				balloon = true;
+			} else dict[player.day] = true;
 
-			dict[RUSSELL_INDEX] = true;
-			dict[userDay] = true;
+			// last one has been placed
+			const next = d => {
+				tally.update(matched);
+				currentStep = 'result';
+				updateStep();
+			};
 
-			if (dict[r.day]) userMatch = r.day;
-			else dict[r.day] = true;
+			const cb = i === 20 ? next : null;
 
-			render.addRecentPlayer({ player: r, speed });
+			render.addRecentPlayer({ player, speed, balloon }, cb);
+
 			i += 1;
 			if (i < 21) setTimeout(release, SECOND / speed);
-			else {
-				currentStep = 'result';
-				setTimeout(updateStep, SECOND);
-			}
 		};
 		setTimeout(release, SECOND * 3);
 	},
 	result: () => {
 		const $text = getStepTextEl();
-		$text.select('.result--no').classed('is-visible', !userMatch);
-		$text.select('.result--yes').classed('is-visible', userMatch);
+		$text.select('.result--no').classed('is-visible', !tally.matchFirst());
+		$text.select('.result--yes').classed('is-visible', tally.matchFirst());
 		delayedButton();
 	},
 	more: () => {
+		$.uiSvg.classed('is-visible', true);
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
 
@@ -112,22 +119,36 @@ const steps = {
 		let i = 0;
 		let speed = 2;
 		let dict = [];
+		let matched = false;
 
 		const release = () => {
 			const player = rawData.recent.pop();
-			if (dict[player.day]) userTally[group] = player.day;
-			else dict[player.day] = true;
+			let balloon = false;
 
-			render.addRecentPlayer({ player, speed });
+			if (dict[player.day]) {
+				matched = true;
+				balloon = true;
+			} else dict[player.day] = true;
+
+			// last one has been placed
+			const next = d => {
+				currentStep = 'result';
+				updateStep();
+			};
+
+			const cb = i === 22 && group === times - 1 ? next : null;
+
+			render.addRecentPlayer({ player, speed, balloon }, cb);
 
 			i += 1;
 			if (i < 23) setTimeout(release, SECOND / speed);
 			else {
 				group += 1;
+				tally.update(matched);
 				if (group < times) {
 					dict = [];
 					i = 0;
-					userTally[group] = null;
+					matched = false;
 					if (group === 1) {
 						speed = 4;
 						$text.select('.speed--1').classed('is-visible', true);
@@ -143,15 +164,11 @@ const steps = {
 						render.removePlayers();
 						release();
 					}, SECOND / speed);
-				} else {
-					console.log(userTally);
-					// TODO currentStep update here
 				}
 			}
 		};
 
 		render.removePlayers();
-		userTally[0] = null;
 		setTimeout(release, SECOND * 3);
 	}
 };
@@ -191,6 +208,8 @@ function getStepButtonEl() {
 function updateStep() {
 	const $s = getStepEl();
 	const id = $s.at('data-id');
+	$.graphicChart.classed('is-visible', id !== 'intro');
+	$.uiSvg.classed('is-visible', false);
 	steps[id]();
 	$.step.classed('is-visible', false);
 	$s.classed('is-visible', true);
@@ -221,6 +240,7 @@ function setCanvasDimensions() {
 function resize() {
 	updateDimensions();
 	setCanvasDimensions();
+	tally.resize();
 }
 
 function changeUserInfo() {
@@ -387,6 +407,7 @@ function setupUser() {
 	if (typeof index === 'number') {
 		const { month, day } = dayData[index];
 		const m = monthData.findIndex(d => d.name === month) + 1;
+		userIndex = index;
 		userMonth = m;
 		userDay = day;
 		$.dropdown
@@ -396,7 +417,7 @@ function setupUser() {
 			.selectAll('.day option')
 			.prop('selected', (d, i) => i === userDay);
 		$.dropdown.select('.day').prop('disabled', false);
-		render.updateUser(index);
+		render.updateUser(userIndex);
 		userGuess = db.getGuess();
 		if (userGuess) {
 			d3
@@ -424,10 +445,13 @@ function init() {
 		rawData = resp[0];
 		db.setup();
 		render.setup(rawData);
-		resize();
 		setupUser();
 		// ready = true;
 		steps.intro();
+
+		const trials = Math.floor((rawData.count + 2) / 23);
+		tally.setup(trials);
+		resize();
 	});
 }
 

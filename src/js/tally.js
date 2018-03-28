@@ -1,0 +1,144 @@
+import $ from './dom';
+
+const RADIUS = 3;
+const SECOND = 1000;
+const REM = 16;
+const FONT_SIZE = 12;
+const BUTTON_HEIGHT = REM * 5;
+const MARGIN = { top: REM, bottom: REM * 2, left: REM * 3, right: REM };
+let width = 0;
+let height = 0;
+const rawData = [];
+let data = null;
+const scale = { x: d3.scaleLinear(), y: d3.scaleLinear() };
+const line = d3
+	.line()
+	.x((d, i) => scale.x(i))
+	.y(d => scale.y(d));
+
+function update(match) {
+	rawData.push(match);
+	// update success vals
+	let total = 0;
+	data = rawData.map((d, i) => {
+		total += d ? 1 : 0;
+		return total / (i + 1);
+	});
+
+	$.gTally
+		.select('.g-line path')
+		.datum(data)
+		.at('d', line);
+
+	$.gTally
+		.select('.g-dots')
+		.selectAll('circle')
+		.data(data)
+		.enter()
+		.append('circle')
+		.at('cx', (d, i) => scale.x(i))
+		.at('cy', d => scale.y(d))
+		.at('r', 1)
+		.transition()
+		.duration(SECOND * 0.5)
+		.ease(d3.easeCubicInOut)
+		.at('r', RADIUS);
+
+	const successCount = rawData.filter(d => d).length;
+	const failureCount = rawData.length - successCount;
+	$.gTally
+		.selectAll('.success')
+		.html(
+			`<tspan class='count'>${successCount}</tspan> <tspan>successes</tspan>`
+		);
+	$.gTally
+		.selectAll('.failure')
+		.html(
+			`<tspan class='count'>${failureCount}</tspan> <tspan>failures</tspan>`
+		);
+}
+
+function matchFirst() {
+	return rawData[0];
+}
+
+function resize() {
+	const n = $.graphicUi.node();
+	width = n.offsetWidth - MARGIN.left - MARGIN.right;
+	height = n.offsetHeight - BUTTON_HEIGHT - MARGIN.top - MARGIN.bottom;
+	const w = width + MARGIN.left + MARGIN.right;
+	const h = height + MARGIN.top + MARGIN.bottom;
+	$.uiSvg.at({ width: w, height: h });
+	scale.x.range([0, width]);
+	scale.y.range([height, 0]);
+	const $x = $.uiSvg.select('.axis--x');
+	$x.select('.label').at('transform', `translate(${width / 2}, 0)`);
+
+	const axisX = d3.axisBottom().scale(scale.x);
+
+	$x
+		.call(axisX)
+		.at('transform', `translate(${MARGIN.left},${MARGIN.top + height})`);
+
+	const $y = $.uiSvg.select('.axis--y');
+
+	$y
+		.select('.label')
+		.at('transform', `rotate(-90) translate(${-height / 2}, 0)`);
+
+	const axisY = d3
+		.axisLeft()
+		.scale(scale.y)
+		.tickSize(-width)
+		.tickFormat(d3.format('.0%'));
+
+	$y.call(axisY).at('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
+
+	$.gTally
+		.selectAll('.success')
+		.at('x', width - FONT_SIZE)
+		.at('y', scale.y(0.8) + REM / 2);
+	$.gTally
+		.selectAll('.failure')
+		.at('x', width - FONT_SIZE)
+		.at('y', scale.y(0.2) + REM / 2);
+}
+
+function setup(count) {
+	$.gTally.at('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
+	const $axis = $.uiSvg.select('g.g-axis');
+	const $x = $axis.append('g.axis--x');
+	const $y = $axis.append('g.axis--y');
+
+	$x
+		.append('text.label')
+		.text('Number of trials')
+		.at('text-anchor', 'middle')
+		.at('y', MARGIN.bottom);
+	$y
+		.append('text.label')
+		.text('Success rate')
+		.at('text-anchor', 'middle')
+		.at('y', -MARGIN.left + FONT_SIZE);
+
+	$.gTally.append('g.g-line').append('path');
+	$.gTally.append('g.g-dots');
+	$.gTally
+		.append('text.success.bg')
+		.at('text-anchor', 'end')
+		.at('alignment-baseline', 'middle');
+	$.gTally
+		.append('text.success.fg')
+		.at('text-anchor', 'end')
+		.at('alignment-baseline', 'middle');
+	$.gTally
+		.append('text.failure.bg')
+		.at('text-anchor', 'end')
+		.at('alignment-baseline', 'middle');
+	$.gTally
+		.append('text.failure.fg')
+		.at('text-anchor', 'end')
+		.at('alignment-baseline', 'middle');
+	scale.x.domain([0, count]);
+}
+export default { setup, resize, update, matchFirst };

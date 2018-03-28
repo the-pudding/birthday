@@ -1,8 +1,10 @@
 import loadImage from './utils/load-image';
 import $ from './dom';
 import flattenMonthData from './flatten-month-data';
+import whichAnimationnEvent from './which-animation-event';
 
 const dayData = flattenMonthData();
+const animationEvent = whichAnimationnEvent();
 
 const PLAYER_W = 32;
 const PLAYER_H = 64;
@@ -25,7 +27,8 @@ function clearContext() {
 	info.context.clearRect(0, 0, info.canvas.width, info.canvas.height);
 }
 
-function renderPlayer({ srcX, srcY, posX, posY }) {
+function renderPlayer({ srcX, srcY, posX, posY, alpha }) {
+	info.context.globalAlpha = alpha;
 	info.context.drawImage(
 		info.bufferCanvas,
 		srcX * PLAYER_W,
@@ -50,6 +53,22 @@ function checkUpdateFrame(p) {
 	}
 }
 
+function removeBalloon() {
+	d3.select(this).remove();
+}
+
+function createBalloon(day) {
+	const src = 'assets/img/balloons.png';
+	const left = scale(day);
+
+	$.chartBalloon
+		.append('img.balloon')
+		.at({ src })
+		.st({ left })
+		.classed('is-float', true)
+		.on(animationEvent, removeBalloon);
+}
+
 function updatePlayer(p) {
 	if (p.state) {
 		// frame animation
@@ -68,6 +87,8 @@ function updatePlayer(p) {
 			p.state = 0;
 			p.frame = 0;
 			if (p.id !== 'You') p.labelEl.classed('is-visible', false);
+			if (p.cb && typeof p.cb === 'function') p.cb();
+			if (p.balloon) createBalloon(p.destDay);
 		}
 	}
 
@@ -75,7 +96,8 @@ function updatePlayer(p) {
 		srcX: p.frame,
 		srcY: p.state,
 		posX: p.x,
-		posY: 0
+		posY: 0,
+		alpha: p.alpha
 	});
 
 	p.labelEl.at('transform', `translate(${p.x}, 0)`);
@@ -136,28 +158,37 @@ function createPlayer({
 	state = 1,
 	speed = 1,
 	off = true,
-	showLabel = false
+	showLabel = false,
+	alpha = 1,
+	cb = null,
+	balloon = false
 }) {
 	const p = {
 		id,
 		speed,
 		state,
+		alpha,
+		balloon,
 		frame: 0,
 		ticks: 0,
 		x: off ? -PLAYER_W : scale(day),
 		destX: scale(day),
 		destDay: day,
-		labelEl: createLabel({ id, showLabel, day })
+		labelEl: createLabel({ id, showLabel, day }),
+		cb
 	};
 	players.push(p);
 }
-function addRecentPlayer({ player, speed = 1 }) {
+function addRecentPlayer({ player, speed = 1, balloon = false }, cb = null) {
 	createPlayer({
 		id: player.ago,
 		day: player.day,
 		state: 2,
 		showLabel: speed < 8,
-		speed
+		speed,
+		alpha: 0.5,
+		balloon,
+		cb
 	});
 }
 
@@ -205,10 +236,18 @@ function setupPlayers() {
 		day: RUSSELL_INDEX,
 		off: false,
 		state: 0,
-		showLabel: true
+		showLabel: true,
+		alpha: 0.75
 	});
 	const mid = Math.floor(365 / 2);
-	createPlayer({ id: 'You', day: mid, off: false, state: 0, showLabel: true });
+	createPlayer({
+		id: 'You',
+		day: mid,
+		off: false,
+		state: 0,
+		showLabel: true,
+		alpha: 0.75
+	});
 }
 
 function resize(w) {

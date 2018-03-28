@@ -1,0 +1,57 @@
+.ui__svg
+	display none
+	position absolute
+	top 0
+	left 0
+	set-index('top')
+	&.is-visible
+		display block
+
+	.label
+		set-type-size(xx-small, false)
+		fill $gray
+		font-weight 600
+		text-transform uppercase
+		letter-spacing 0.05em
+	
+	.axis--x
+		.tick 
+			line
+				display none
+			text
+				fill $gray
+		path
+			display none
+	.axis--y
+		.tick 
+			line
+				stroke-dasharray 4px 4px
+				stroke-width 0.5px
+				stroke $gray-light
+			text
+				fill $gray
+		path
+			display none
+	
+	.g-line
+		fill none
+		stroke $primary
+		stroke-width 2px
+		stroke-linecap round
+
+	.g-dots circle
+		stroke none
+		fill $primary
+	
+	.success, .failure
+		set-type-size(root, false)
+		text-transform uppercase
+		&.bg
+			stroke #fff
+			stroke-width 3px
+		&.fg
+			fill $gray
+			font-weight 500
+		.count
+			font-weight 600
+			fill $gray-dark
