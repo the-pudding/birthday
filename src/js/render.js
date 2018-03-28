@@ -57,9 +57,10 @@ function removeBalloon() {
 	d3.select(this).remove();
 }
 
-function createBalloon(day) {
+function createBalloon(p) {
+	p.balloon = false;
 	const src = 'assets/img/balloons.png';
-	const left = scale(day);
+	const left = scale(p.destDay);
 
 	$.chartBalloon
 		.append('img.balloon')
@@ -87,10 +88,13 @@ function updatePlayer(p) {
 			p.state = 0;
 			p.frame = 0;
 			if (p.id !== 'You') p.labelEl.classed('is-visible', false);
-			if (p.cb && typeof p.cb === 'function') p.cb();
-			if (p.balloon) createBalloon(p.destDay);
+			if (p.cb && typeof p.cb === 'function') {
+				p.cb();
+				p.cb = null;
+			}
+			if (p.balloon) createBalloon(p);
 		}
-	}
+	} else if (p.balloon) createBalloon(p);
 
 	renderPlayer({
 		srcX: p.frame,
@@ -184,10 +188,13 @@ function addRecentPlayer(
 	cb = null
 ) {
 	const showLabel = hideLabel ? false : speed < 4;
+	const off = speed < 64;
+	const state = speed < 64 ? 2 : 0;
 	createPlayer({
 		id: player.ago,
 		day: player.day,
-		state: 2,
+		state,
+		off,
 		showLabel,
 		speed,
 		alpha: 0.5,

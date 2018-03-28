@@ -100,11 +100,11 @@ function resize() {
 	$.gTally
 		.selectAll('.success')
 		.at('x', width - FONT_SIZE)
-		.at('y', scale.y(0.8) + REM / 2);
+		.at('y', scale.y(0.75) + REM / 2);
 	$.gTally
 		.selectAll('.failure')
 		.at('x', width - FONT_SIZE)
-		.at('y', scale.y(0.2) + REM / 2);
+		.at('y', scale.y(0.25) + REM / 2);
 }
 
 function setup(count) {

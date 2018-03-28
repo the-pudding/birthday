@@ -99,7 +99,7 @@ const steps = {
 			i += 1;
 			if (i < 21) setTimeout(release, SECOND / speed);
 		};
-		setTimeout(release, SECOND * 3);
+		setTimeout(release, SECOND * 4);
 	},
 	result: () => {
 		const $text = getStepTextEl();
@@ -175,6 +175,32 @@ const steps = {
 		$.svgTally.classed('is-visible', true);
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
+
+		const i = 0;
+		const speed = 64;
+
+		const release = () => {
+			render.removePlayers();
+			const matched = rawData.tally.pop();
+
+			// const cb = i === 20 ? next : null;
+			const players = d3
+				.range(23)
+				.map(d => ({ ago: d, day: Math.floor(Math.random() * 366) }));
+			players.forEach((player, i) => {
+				const balloon = i === 0 && matched;
+				render.addRecentPlayer({ player, speed, balloon });
+			});
+			tally.update(matched);
+			if (rawData.tally.length) setTimeout(release, SECOND * 0.25);
+			else {
+				delayedButton();
+			}
+		};
+		setTimeout(release, SECOND * 4);
+	},
+	math: () => {
+		console.log('math');
 	}
 };
 
@@ -341,6 +367,9 @@ function handleButtonClick() {
 			break;
 		case 'result':
 			currentStep = 'more';
+			break;
+		case 'all':
+			currentStep = 'math';
 			break;
 		default:
 			break;
