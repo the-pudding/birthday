@@ -27,16 +27,13 @@ let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
 // let ready = false;
-let rainTimeout = null;
 let currentStep = 'intro';
 
 const steps = {
 	intro: () => {
 		rainBalloons();
 	},
-	birthday: () => {
-		clearTimeout(rainTimeout);
-	},
+	birthday: () => {},
 	guess: () => {
 		render.showBirthday('Russell');
 		const $s = getStepTextEl();
@@ -51,7 +48,9 @@ const steps = {
 		const $s = getStepTextEl();
 		const odds = calculateOdds(userGuess);
 		$s.select('.people').text(userGuess);
-		$s.select('.percent').text(d3.format('.1%')(odds));
+		const oddsFormatted = d3.format('.1%')(odds);
+		const oddsDisplay = oddsFormatted === '100.0%' ? '> 99.9%' : oddsFormatted;
+		$s.select('.percent').text(oddsDisplay);
 		delayedButton();
 		db.closeConnection();
 	},
@@ -59,7 +58,9 @@ const steps = {
 		const $s = getStepTextEl();
 		const odds = calculateOdds(userGuess);
 		$s.select('.people').text(userGuess);
-		$s.select('.percent').text(d3.format('.1%')(odds));
+		const oddsFormatted = d3.format('.1%')(odds);
+		const oddsDisplay = oddsFormatted === '100.0%' ? '> 99.9%' : oddsFormatted;
+		$s.select('.percent').text(oddsDisplay);
 		delayedButton();
 		db.closeConnection();
 	},
@@ -102,9 +103,9 @@ const steps = {
 			render.addRecentPlayer({ player, speed, balloon }, cb);
 
 			i += 1;
-			if (i < 21) setTimeout(release, SECOND / speed);
+			if (i < 21) d3.timeout(release, SECOND / speed);
 		};
-		setTimeout(release, SECOND * 5);
+		d3.timeout(release, SECOND * 5);
 	},
 	result: () => {
 		const $text = getStepTextEl();
@@ -146,7 +147,7 @@ const steps = {
 			render.addRecentPlayer({ player, speed, balloon, hideLabel: true }, cb);
 
 			i += 1;
-			if (i < 23) setTimeout(release, SECOND / speed);
+			if (i < 23) d3.timeout(release, SECOND / speed);
 			else {
 				group += 1;
 				tally.update(matched);
@@ -165,7 +166,7 @@ const steps = {
 						speed = 32;
 						$text.select('.speed--3').classed('is-visible', true);
 					}
-					setTimeout(() => {
+					d3.timeout(() => {
 						render.removePlayers();
 						release();
 					}, SECOND / speed);
@@ -174,7 +175,7 @@ const steps = {
 		};
 
 		render.removePlayers();
-		setTimeout(release, SECOND * 3);
+		d3.timeout(release, SECOND * 3);
 	},
 	all: () => {
 		$.svgTally.classed('is-visible', true);
@@ -198,27 +199,30 @@ const steps = {
 				render.addRecentPlayer({ player, speed, balloon });
 			});
 			tally.update(matched);
-			if (rawData.tally.length) setTimeout(release, rate);
+			if (rawData.tally.length) d3.timeout(release, rate);
 			else {
 				console.log('delayed button');
 				$btn.classed('is-hidden', false);
 				delayedButton(0);
 			}
 		};
-		setTimeout(release, SECOND * 5);
+		d3.timeout(release, SECOND * 5);
 	},
 	math: () => {
-		console.log('math');
+		delayedButton();
+	},
+	conclusion: () => {
+		delayedButton();
 	}
 };
 
 function rainBalloons() {
 	render.createBalloon({ destDay: Math.floor(Math.random() * 366) });
-	if (currentStep === 'intro') rainTimeout = setTimeout(rainBalloons, 200);
+	if (currentStep === 'intro') d3.timeout(rainBalloons, 200);
 }
 function delayedButton(delay = SECOND * 2) {
 	const $btn = getStepButtonEl();
-	setTimeout(() => {
+	d3.timeout(() => {
 		$btn.prop('disabled', false);
 	}, delay);
 }
@@ -382,6 +386,9 @@ function handleButtonClick() {
 			break;
 		case 'all':
 			currentStep = 'math';
+			break;
+		case 'math':
+			currentStep = 'conclusion';
 			break;
 		default:
 			break;

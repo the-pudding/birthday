@@ -113,7 +113,7 @@ function updatePlayer(p) {
 	p.labelEl.at('transform', `translate(${p.x}, 0)`);
 }
 function tick() {
-	const timeCurrent = new Date().getTime();
+	const timeCurrent = d3.now();
 	const timeElapsed = timeCurrent - timePrevious;
 	if (timeElapsed > FRAME_RATE) {
 		timePrevious = timeCurrent;
