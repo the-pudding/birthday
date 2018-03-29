@@ -4,7 +4,6 @@ const RADIUS = 3;
 const SECOND = 1000;
 const REM = 16;
 const FONT_SIZE = 12;
-const BUTTON_HEIGHT = REM * 5;
 const MARGIN = { top: REM, bottom: REM * 3, left: REM * 3.25, right: REM };
 const height = 10 * REM - MARGIN.top - MARGIN.bottom;
 let width = 0;
@@ -65,11 +64,8 @@ function matchFirst() {
 }
 
 function resize() {
-	const n = $.graphicUi.node();
-	width = n.offsetWidth - MARGIN.left - MARGIN.right;
-	const w = width + MARGIN.left + MARGIN.right;
-	const h = height + MARGIN.top + MARGIN.bottom;
-	$.svgTally.at({ width: w, height: h });
+	const w = $.graphicUi.node().offsetWidth;
+	width = w - MARGIN.left - MARGIN.right;
 	scale.x.range([0, width]);
 	scale.y.range([height, 0]);
 	const $x = $.svgTally.select('.axis--x');

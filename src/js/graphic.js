@@ -2,6 +2,7 @@
 import * as noUiSlider from 'nouislider';
 import db from './db';
 import tally from './tally';
+import math from './math';
 import render from './render';
 import $ from './dom';
 import flattenMonthData from './flatten-month-data';
@@ -16,17 +17,17 @@ const RUSSELL_INDEX = 319;
 const SECOND = 1000;
 const REM = 16;
 const MARGIN = REM * 2;
+const JORDAN = 23;
 
+const storedSteps = [];
 const dayData = flattenMonthData();
 let rawData = null;
 let width = 0;
 let height = 0;
-let mobile = false;
 let userMonth = -1;
 let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
-// let ready = false;
 let currentStep = 'intro';
 
 const steps = {
@@ -83,8 +84,9 @@ const steps = {
 		dict[userIndex] = true;
 		let matched = false;
 
+		const recentData = rawData.recent.map(d => ({ ago: d.ago, day: d.day }));
 		const release = () => {
-			const player = rawData.recent.pop();
+			const player = recentData.pop();
 			let balloon = false;
 			if (dict[player.day]) {
 				matched = true;
@@ -126,9 +128,12 @@ const steps = {
 		let speed = 2;
 		let dict = [];
 		let matched = false;
+		const recentData = rawData.recent
+			.slice(21)
+			.map(d => ({ ago: d.ago, day: d.day }));
 
 		const release = () => {
-			const player = rawData.recent.pop();
+			const player = recentData.pop();
 			let balloon = false;
 
 			if (dict[player.day]) {
@@ -147,7 +152,7 @@ const steps = {
 			render.addRecentPlayer({ player, speed, balloon, hideLabel: true }, cb);
 
 			i += 1;
-			if (i < 23) d3.timeout(release, SECOND / speed);
+			if (i < JORDAN) d3.timeout(release, SECOND / speed);
 			else {
 				group += 1;
 				tally.update(matched);
@@ -185,21 +190,22 @@ const steps = {
 		const speed = 64;
 		const total = rawData.tally.length;
 		const rate = Math.min(SECOND * 8 / total, 200);
+		const tallyData = rawData.tally.map(d => d);
 
 		const release = () => {
 			render.removePlayers();
-			const matched = rawData.tally.pop();
+			const matched = tallyData.pop();
 
 			// const cb = i === 20 ? next : null;
 			const players = d3
-				.range(23)
+				.range(JORDAN)
 				.map(d => ({ ago: d, day: Math.floor(Math.random() * 366) }));
 			players.forEach((player, i) => {
 				const balloon = i === 0 && matched;
 				render.addRecentPlayer({ player, speed, balloon });
 			});
 			tally.update(matched);
-			if (rawData.tally.length) d3.timeout(release, rate);
+			if (tallyData.length) d3.timeout(release, rate);
 			else {
 				console.log('delayed button');
 				$btn.classed('is-hidden', false);
@@ -209,6 +215,8 @@ const steps = {
 		d3.timeout(release, SECOND * 5);
 	},
 	math: () => {
+		console.log('math');
+		d3.timeout(release, SECOND * 5);
 		delayedButton();
 	},
 	conclusion: () => {
@@ -253,6 +261,7 @@ function getStepButtonEl() {
 }
 
 function updateStep() {
+	storedSteps.push(currentStep);
 	const $s = getStepEl();
 	const id = $s.at('data-id');
 	$.graphicChart.classed('is-visible', id !== 'intro');
@@ -265,7 +274,6 @@ function updateStep() {
 function updateDimensions() {
 	width = $.content.node().offsetWidth;
 	height = window.innerHeight;
-	mobile = width < BP;
 	$.content.st('height', height);
 }
 
@@ -288,6 +296,7 @@ function resize() {
 	updateDimensions();
 	setCanvasDimensions();
 	tally.resize();
+	// math.resize();
 }
 
 function changeUserInfo() {
@@ -363,16 +372,19 @@ function handleButtonClick() {
 		case 'guess':
 			db.update({ key: 'guess', value: userGuess });
 			$.graphicUi.classed('is-short', true);
-			currentStep =
-					userGuess === 23
-						? 'guessExact'
-						: userGuess < 23 ? 'guessBelow' : 'guessAbove';
+			if (userGuess === JORDAN) currentStep = 'guessExact';
+			else if (Math.abs(JORDAN - userGuess) < 3) currentStep = 'guessClose';
+			else if (userGuess > JORDAN) currentStep = 'guessAbove';
+			else currentStep = 'guessBelow';
 			break;
 
 		case 'guessAbove':
 			currentStep = 'paradox';
 			break;
 		case 'guessBelow':
+			currentStep = 'paradox';
+			break;
+		case 'guessClose':
 			currentStep = 'paradox';
 			break;
 		case 'guessExact':
@@ -505,8 +517,9 @@ function init() {
 		db.setup();
 		render.setup(begin);
 		setupUser();
-		const trials = Math.floor((rawData.count + 2) / 23);
+		const trials = Math.floor((rawData.count + 2) / JORDAN);
 		tally.setup(trials);
+		// math.setup();
 		resize();
 	});
 }
