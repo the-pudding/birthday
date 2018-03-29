@@ -5,6 +5,7 @@ import whichAnimationnEvent from './which-animation-event';
 
 const dayData = flattenMonthData();
 const animationEvent = whichAnimationnEvent();
+const SPRITES = ['gray', 'red', 'orange', 'yellow', 'green', 'violet'];
 
 const PLAYER_W = 32;
 const PLAYER_H = 64;
@@ -15,10 +16,14 @@ const LABEL_LINE_HEIGHT = 12;
 const REM = 16;
 const RUSSELL_INDEX = 319;
 const SVG_HEIGHT = REM * 10;
+const FRAME_RATE = 125;
 
 const scale = d3.scaleLinear();
 const info = {};
 let players = [];
+
+let timePrevious = 0;
+let skinFrame = 0;
 
 let width = 0;
 const $label = null;
@@ -27,10 +32,10 @@ function clearContext() {
 	info.context.clearRect(0, 0, info.canvas.width, info.canvas.height);
 }
 
-function renderPlayer({ srcX, srcY, posX, posY, alpha }) {
+function renderPlayer({ srcX, srcY, posX, posY, alpha, skin }) {
 	info.context.globalAlpha = alpha;
 	info.context.drawImage(
-		info.bufferCanvas,
+		info.bufferCanvas[skin],
 		srcX * PLAYER_W,
 		srcY * PLAYER_H,
 		PLAYER_W,
@@ -59,12 +64,12 @@ function removeBalloon() {
 
 function createBalloon(p) {
 	p.balloon = false;
-	const src = 'assets/img/balloons.png';
+	p.rainbow = true;
 	const left = scale(p.destDay);
 
 	$.chartBalloon
-		.append('img.balloon')
-		.at({ src })
+		.append('p.balloon')
+		.text('🎈')
 		.st({ left })
 		.classed('is-float', true)
 		.on(animationEvent, removeBalloon);
@@ -101,17 +106,20 @@ function updatePlayer(p) {
 		srcY: p.state,
 		posX: p.x,
 		posY: 0,
-		alpha: p.alpha
+		alpha: p.alpha,
+		skin: p.rainbow ? skinFrame : p.skin
 	});
 
 	p.labelEl.at('transform', `translate(${p.x}, 0)`);
 }
 function tick() {
-	// const timeCurrent = new Date().getTime();
-	// const timeElapsed = timeCurrent - timePrevious;
-	// if (timeElapsed > framerate) {
-	// 	timePrevious = timeCurrent;
-	// }
+	const timeCurrent = new Date().getTime();
+	const timeElapsed = timeCurrent - timePrevious;
+	if (timeElapsed > FRAME_RATE) {
+		timePrevious = timeCurrent;
+		skinFrame += 1;
+		if (skinFrame >= SPRITES.length) skinFrame = 0;
+	}
 	clearContext();
 	players.forEach(updatePlayer);
 	window.requestAnimationFrame(tick);
@@ -129,7 +137,12 @@ function updateUser(day) {
 	p.state = p.destX < p.x ? 1 : 2;
 }
 
-function createLabel({ id, showLabel, day }) {
+function showBirthday(id) {
+	const p = players.find(d => d.id === id);
+	p.labelEl.select('.date').classed('is-visible', true);
+}
+
+function createLabel({ id, showLabel, day, showBirth = true }) {
 	const match = dayData[day];
 	const date = `${match.month.slice(0, 3)} ${match.day}`;
 	const el = $.gLabel.append('g.label');
@@ -139,13 +152,14 @@ function createLabel({ id, showLabel, day }) {
 		.append('text.id')
 		.text(id)
 		.at('text-anchor', 'middle')
-		.at('y', -REM * 1.33);
+		.at('y', -REM * 0.33);
 
 	el
 		.append('text.date')
 		.text(date)
 		.at('text-anchor', 'middle')
-		.at('y', -REM * 0.33);
+		.at('y', -REM * 1.33)
+		.classed('is-visible', showBirth);
 
 	el.append('line').at({
 		x1: 0,
@@ -159,13 +173,15 @@ function createLabel({ id, showLabel, day }) {
 function createPlayer({
 	id,
 	day,
-	state = 1,
+	state = 0,
 	speed = 1,
 	off = true,
 	showLabel = false,
 	alpha = 1,
 	cb = null,
-	balloon = false
+	balloon = false,
+	showBirth = true,
+	skin = Math.ceil(Math.random() * (SPRITES.length - 1))
 }) {
 	const p = {
 		id,
@@ -173,12 +189,13 @@ function createPlayer({
 		state,
 		alpha,
 		balloon,
+		skin,
 		frame: 0,
 		ticks: 0,
 		x: off ? -PLAYER_W : scale(day),
 		destX: scale(day),
 		destDay: day,
-		labelEl: createLabel({ id, showLabel, day }),
+		labelEl: createLabel({ id, showLabel, day, showBirth }),
 		cb
 	};
 	players.push(p);
@@ -213,26 +230,32 @@ function hideSpecialLabels() {
 }
 
 function setupCanvas() {
-	const canvas = document.createElement('canvas');
-	canvas.setAttribute('width', info.width);
-	canvas.setAttribute('height', info.height);
-	const context = canvas.getContext('2d');
+	info.bufferCanvas = [];
+	info.bufferContext = [];
 
-	context.drawImage(
-		info.img,
-		0,
-		0,
-		info.width,
-		info.height,
-		0,
-		0,
-		info.width,
-		info.height
-	);
+	SPRITES.forEach((sprite, i) => {
+		const canvas = document.createElement('canvas');
+		canvas.setAttribute('width', info.width);
+		canvas.setAttribute('height', info.height);
+		const context = canvas.getContext('2d');
 
-	// store canvas + context for later
-	info.bufferCanvas = canvas;
-	info.bufferContext = context;
+		context.drawImage(
+			info.sprites[i],
+			0,
+			0,
+			info.width,
+			info.height,
+			0,
+			0,
+			info.width,
+			info.height
+		);
+
+		// store canvas + context for later
+		info.bufferCanvas.push(canvas);
+		info.bufferContext.push(context);
+	});
+
 	info.canvas = $.chartCanvas.node();
 	info.context = $.chartCanvas.node().getContext('2d');
 }
@@ -246,18 +269,19 @@ function setupPlayers() {
 		id: 'Russell',
 		day: RUSSELL_INDEX,
 		off: false,
-		state: 0,
 		showLabel: true,
-		alpha: 0.75
+		showBirth: false,
+		alpha: 0.75,
+		skin: 0
 	});
 	const mid = Math.floor(365 / 2);
 	createPlayer({
 		id: 'You',
 		day: mid,
 		off: false,
-		state: 0,
 		showLabel: true,
-		alpha: 0.75
+		alpha: 0.75,
+		skin: 1
 	});
 }
 
@@ -270,15 +294,29 @@ function resize(w) {
 	});
 }
 
-function setup() {
+function loadSprites(cb) {
+	const imgs = [];
+	let i = 0;
+	const next = () => {
+		loadImage(`assets/img/${SPRITES[i]}.png`, (err, img) => {
+			imgs.push(img);
+			i++;
+			if (i < SPRITES.length) next();
+			else cb(imgs);
+		});
+	};
+	next();
+}
+function setup(cb) {
 	setupPlayers();
-	loadImage('assets/img/test.png', (err, img) => {
-		info.img = img;
-		info.width = img.width;
-		info.height = img.height;
+	loadSprites(imgs => {
+		info.sprites = imgs;
+		info.width = imgs[0].width;
+		info.height = imgs[0].height;
 		setupCanvas();
 		setupSvg();
 		tick();
+		cb();
 	});
 }
 
@@ -288,5 +326,7 @@ export default {
 	updateUser,
 	addRecentPlayer,
 	removePlayers,
-	hideSpecialLabels
+	hideSpecialLabels,
+	showBirthday,
+	createBalloon
 };

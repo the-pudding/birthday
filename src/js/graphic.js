@@ -14,6 +14,8 @@ const DATA_URL = `https://pudding.cool/2018/04/birthday-data/data.json?version=$
 const DPR = Math.min(window.devicePixelRatio, 2);
 const RUSSELL_INDEX = 319;
 const SECOND = 1000;
+const REM = 16;
+const MARGIN = REM * 2;
 
 const dayData = flattenMonthData();
 let rawData = null;
@@ -25,15 +27,18 @@ let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
 // let ready = false;
-
+let rainTimeout = null;
 let currentStep = 'intro';
 
 const steps = {
 	intro: () => {
-		delayedButton(1000);
+		rainBalloons();
 	},
-	birthday: () => {},
+	birthday: () => {
+		clearTimeout(rainTimeout);
+	},
 	guess: () => {
+		render.showBirthday('Russell');
 		const $s = getStepTextEl();
 		$s
 			.selectAll('.guess--no')
@@ -99,7 +104,7 @@ const steps = {
 			i += 1;
 			if (i < 21) setTimeout(release, SECOND / speed);
 		};
-		setTimeout(release, SECOND * 4);
+		setTimeout(release, SECOND * 5);
 	},
 	result: () => {
 		const $text = getStepTextEl();
@@ -176,8 +181,9 @@ const steps = {
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
 
-		const i = 0;
 		const speed = 64;
+		const total = rawData.tally.length;
+		const rate = Math.min(SECOND * 8 / total, 200);
 
 		const release = () => {
 			render.removePlayers();
@@ -192,18 +198,24 @@ const steps = {
 				render.addRecentPlayer({ player, speed, balloon });
 			});
 			tally.update(matched);
-			if (rawData.tally.length) setTimeout(release, SECOND * 0.25);
+			if (rawData.tally.length) setTimeout(release, rate);
 			else {
-				delayedButton();
+				console.log('delayed button');
+				$btn.classed('is-hidden', false);
+				delayedButton(0);
 			}
 		};
-		setTimeout(release, SECOND * 4);
+		setTimeout(release, SECOND * 5);
 	},
 	math: () => {
 		console.log('math');
 	}
 };
 
+function rainBalloons() {
+	render.createBalloon({ destDay: Math.floor(Math.random() * 366) });
+	if (currentStep === 'intro') rainTimeout = setTimeout(rainBalloons, 200);
+}
 function delayedButton(delay = SECOND * 2) {
 	const $btn = getStepButtonEl();
 	setTimeout(() => {
@@ -467,6 +479,12 @@ function setupUser() {
 	}
 }
 
+function begin() {
+	const $btn = getStepButtonEl();
+	$btn.text('Begin');
+	delayedButton(500);
+}
+
 function init() {
 	updateDimensions();
 
@@ -478,11 +496,8 @@ function init() {
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];
 		db.setup();
-		render.setup(rawData);
+		render.setup(begin);
 		setupUser();
-		// ready = true;
-		steps.intro();
-
 		const trials = Math.floor((rawData.count + 2) / 23);
 		tally.setup(trials);
 		resize();
