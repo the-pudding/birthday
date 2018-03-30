@@ -14,6 +14,10 @@ const line = d3
 	.x((d, i) => scale.x(i))
 	.y(d => scale.y(d));
 
+function isComplete() {
+	return rawData.length > 20;
+}
+
 function updateChart() {
 	// update success vals
 	let total = 0;
@@ -28,19 +32,24 @@ function updateChart() {
 		.datum(data)
 		.at('d', line);
 
-	$.gTally
+	const $circle = $.gTally
 		.select('.g-dots')
 		.selectAll('circle')
-		.data(data)
+		.data(data);
+
+	$circle
 		.enter()
 		.append('circle')
+		.at('r', 1)
+		.merge($circle)
 		.at('cx', (d, i) => scale.x(i))
 		.at('cy', d => scale.y(d))
-		.at('r', 1)
 		.transition()
 		.duration(SECOND * 0.5)
 		.ease(d3.easeCubicInOut)
 		.at('r', RADIUS);
+
+	$circle.exit().remove();
 
 	const successCount = rawData.filter(d => d).length;
 	const failureCount = rawData.length - successCount;
@@ -65,6 +74,7 @@ function update(match) {
 
 function clear(start) {
 	rawData = rawData.slice(0, start);
+	updateChart();
 }
 
 function matchFirst() {
@@ -148,4 +158,4 @@ function setup(count) {
 		.at('alignment-baseline', 'baseline');
 	scale.x.domain([0, count]);
 }
-export default { setup, resize, update, matchFirst, clear };
+export default { setup, resize, update, matchFirst, clear, isComplete };

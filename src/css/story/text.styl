@@ -1,6 +1,6 @@
 .graphic__text
 	position relative	
-	overflow-x hidden
+	// overflow-x hidden
 .text__step
 	position absolute
 	width 100%
@@ -25,6 +25,8 @@
 		transition none
 	
 	p
+		max-width 50rem
+		margin 0 auto
 		line-height 1.5
 		+mq('bp-desktop')
 			set-type-size(large, false)

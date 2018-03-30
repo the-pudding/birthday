@@ -134,6 +134,9 @@ const steps = {
 		$btn.classed('is-hidden', true);
 
 		const $text = getStepTextEl();
+		$text.select('.speed--1').classed('is-visible', false);
+		$text.select('.speed--2').classed('is-visible', false);
+		$text.select('.speed--3').classed('is-visible', false);
 
 		let group = 0;
 		const times = 19;
@@ -238,10 +241,16 @@ const steps = {
 				delayedButton(0);
 			}
 		};
-		d3.timeout(() => {
+		if (tally.isComplete()) {
 			render.removePlayers();
-			release();
-		}, SECOND * 5);
+			$btn.classed('is-hidden', false);
+			delayedButton(0);
+		} else {
+			d3.timeout(() => {
+				render.removePlayers();
+				release();
+			}, SECOND * 5);
+		}
 	},
 	math: () => {
 		render.removePlayers();
@@ -460,7 +469,7 @@ function handleSlide(a) {
 }
 
 function handleButtonClickPrev() {
-	consle.log(storedSteps)
+	console.log(storedSteps);
 	const cur = storedSteps.pop();
 	const prev = storedSteps.pop();
 	// special case for double jump

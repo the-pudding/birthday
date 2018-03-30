@@ -16,6 +16,15 @@ const height = 10 * REM;
 let data = null;
 const scale = { x: d3.scaleLinear() };
 
+function formatInt(num) {
+	return d3.format(',d')(num);
+}
+
+function formatPercent(num) {
+	const percent = d3.format('.1%')(num / 100);
+	return percent === '100.0%' ? '> 99.9%' : percent;
+}
+
 function makeArc({ diam, fraction }) {
 	return `M0,0 A${diam / 2},${diam / fraction} 0 0,1 ${diam},0`;
 }
@@ -52,12 +61,36 @@ function update(players) {
 		});
 
 	const odds = calculateOdds(players.length);
-	const oddsFormatted = d3.format('.1%')(odds);
-	const oddsDisplay = oddsFormatted === '100.0%' ? '> 99.9%' : oddsFormatted;
 
-	$.mathInfo.select('.people--value').text(players.length);
-	$.mathInfo.select('.comparisons--value').text(data.length);
-	$.mathInfo.select('.chance--value').text(oddsDisplay);
+	$.mathInfo
+		.select('.people--value')
+		.transition()
+		.duration(SECOND)
+		.tween('text', (d, i, n) => {
+			const $v = d3.select(n[i]);
+			const terp = d3.interpolateNumber($v.text(), players.length);
+			return t => $v.text(formatInt(terp(t)));
+		});
+
+	$.mathInfo
+		.select('.comparisons--value')
+		.transition()
+		.duration(SECOND)
+		.tween('text', (d, i, n) => {
+			const $v = d3.select(n[i]);
+			const terp = d3.interpolateNumber($v.text(), data.length);
+			return t => $v.text(formatInt(terp(t)));
+		});
+
+	$.mathInfo
+		.select('.chance--value')
+		.transition()
+		.duration(SECOND)
+		.tween('text', (d, i, n) => {
+			const $v = d3.select(n[i]);
+			const terp = d3.interpolateNumber($v.text().replace('%', ''), odds * 100);
+			return t => $v.text(formatPercent(terp(t)));
+		});
 }
 
 function resize() {
@@ -74,7 +107,10 @@ function setup() {
 			.select('.labels')
 			.append(`p.${t}--label`)
 			.text(t);
-		$.mathInfo.select('.values').append(`p.${t}--value`);
+		$.mathInfo
+			.select('.values')
+			.append(`p.${t}--value`)
+			.text(0);
 	});
 }
 export default { setup, resize, update };
