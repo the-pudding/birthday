@@ -25,6 +25,9 @@ const slider = graphicUi.select('.slider');
 const gLabel = svgLabel.select('.g-label');
 const gTally = svgTally.select('.g-tally');
 
+const sup = graphicText.selectAll('sup');
+const note = graphicText.selectAll('.note');
+
 export default {
 	content,
 	graphic,
@@ -45,5 +48,7 @@ export default {
 	gLabel,
 	gTally,
 	svgMath,
-	mathInfo
+	mathInfo,
+	sup,
+	note
 };

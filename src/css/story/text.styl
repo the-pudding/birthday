@@ -37,6 +37,40 @@
 	
 	.note
 		display none
+		position absolute
+		bottom 1rem
+		left 0
+		width 19rem
+		background-color $gray-dark
+		box-shadow 0 0 6px 0 rgba($primary, 0.5)
+		border-radius 2px
+		padding 0.5rem
+		color $off-white
+		text-align left
+		set-type-size('small', true)
+		font-weight 500
+		z-index set-index('overlay')
+		cursor pointer
+		&.is-visible
+			display block
+	
+	sup
+		position relative
+		display inline-block
+		top 0
+		left 0
+		background-color $primary
+		color $yellow
+		border-radius 50%
+		width 0.8rem
+		height 0.8rem
+		font-weight 600
+		font-size 0.75rem
+		line-height 0.7rem
+		position relative
+		vertical-align super
+		text-align center
+		cursor pointer
 
 	.hint
 		display block

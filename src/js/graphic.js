@@ -468,8 +468,19 @@ function handleSlide(a) {
 	$btn.prop('disabled', false);
 }
 
+function handleSupClick() {
+	const $sup = d3.select(this);
+	const $note = $sup.select('.note');
+	const visible = $note.classed('is-visible');
+	$note.classed('is-visible', !visible);
+}
+
+function handleNoteClick() {
+	d3.event.stopPropagation();
+	d3.select(this).classed('is-visible', false);
+}
+
 function handleButtonClickPrev() {
-	console.log(storedSteps);
 	const cur = storedSteps.pop();
 	const prev = storedSteps.pop();
 	// special case for double jump
@@ -573,6 +584,8 @@ function setupDropdown() {
 function setupButton() {
 	$.buttonNext.on('click', handleButtonClickNext);
 	$.buttonPrev.on('click', handleButtonClickPrev);
+	$.sup.on('click', handleSupClick);
+	$.note.on('click', handleNoteClick);
 }
 
 function setupSlider() {
