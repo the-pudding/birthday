@@ -6,6 +6,7 @@ import checkStorage from './check-storage';
 let firebaseApp = null;
 let firebaseDB = null;
 let userData = {};
+let connected = false;
 
 const hasStorage = checkStorage('localStorage');
 
@@ -39,7 +40,7 @@ function setupUserData() {
 	return { day: null, guess: null, id: newID };
 }
 
-function setup() {
+function connect() {
 	// Initialize Firebase
 	const config = {
 		apiKey: 'AIzaSyB3yAZTBNwiZjBIXRFCR4Kb_VZcTiXluiE',
@@ -49,42 +50,39 @@ function setup() {
 	};
 	firebaseApp = firebase.initializeApp(config);
 	firebaseDB = firebaseApp.database();
+	connected = true;
+}
+
+function exists() {
+	return typeof userData.day === 'number' && typeof userData.guess === 'number';
+}
+
+function setup() {
 	userData = setupUserData();
-	console.log(userData);
+	if (!exists()) connect();
+	// console.log(userData);
 }
 
 function closeConnection() {
-	firebaseApp.delete().then(() => console.log('firebase: deleted connection'));
+	if (connected)
+		firebaseApp
+			.delete()
+			.then(() => console.log('firebase: deleted connection'));
 }
 
 function update({ key, value }) {
 	userData[key] = value;
 	if (hasStorage) window.localStorage.setItem(`pudding_birthday_${key}`, value);
 	const { day, guess, id } = userData;
-	firebaseDB
-		.ref(id)
-		.set({ day, guess })
-		.then(() => {
-			console.log('firebase: data updated');
-		})
-		.catch(console.log);
+	if (connected) {
+		firebaseDB
+			.ref(id)
+			.set({ day, guess })
+			.then(() => {
+				console.log('firebase: data updated');
+			})
+			.catch(console.log);
+	}
 }
-
-// function filler() {
-// 	d3.loadData('assets/filler.csv', (err, resp) => {
-// 		const data = resp[0].map(d => ({ day: +d.day }));
-// 		const output = {};
-// 		let i = 0;
-// 		const f = () => {
-// 			const id = generateID();
-// 			output[id] = data[i];
-// 			i++;
-// 			console.log(i);
-// 			if (i < data.length) setTimeout(f, 5);
-// 			else window.output = JSON.stringify(output);
-// 		};
-// 		f();
-// 	});
-// }
 
 export default { setup, update, getDay, getGuess, closeConnection };

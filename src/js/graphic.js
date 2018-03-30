@@ -8,6 +8,7 @@ import $ from './dom';
 import flattenMonthData from './flatten-month-data';
 import calculateOdds from './calculate-odds';
 import monthData from './month-data';
+import shuffle from './shuffle';
 
 const BP = 800;
 const VERSION = new Date().getTime();
@@ -29,10 +30,13 @@ let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
 let currentStep = 'intro';
+let jiggleTimeout = null;
 
 const steps = {
 	intro: () => {
 		rainBalloons();
+		const $btn = getStepButtonEl();
+		$btn.classed('is-hidden', (d, i) => i !== 0);
 	},
 	birthday: () => {},
 	guess: () => {
@@ -71,8 +75,11 @@ const steps = {
 	},
 	paradox: () => {
 		delayedButton();
+		render.removePlayers();
+		render.showBigTwo();
 	},
 	believe: () => {
+		tally.clear(0);
 		// release 1 every X seconds
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
@@ -107,7 +114,12 @@ const steps = {
 			i += 1;
 			if (i < 21) d3.timeout(release, SECOND / speed);
 		};
-		d3.timeout(release, SECOND * 5);
+		d3.timeout(() => {
+			render.removePlayers();
+			render.showBigTwo(false);
+			render.hideSpecialLabels();
+			release();
+		}, SECOND * 5);
 	},
 	result: () => {
 		const $text = getStepTextEl();
@@ -116,6 +128,7 @@ const steps = {
 		delayedButton();
 	},
 	more: () => {
+		tally.clear(1);
 		$.svgTally.classed('is-visible', true);
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
@@ -188,9 +201,23 @@ const steps = {
 		$btn.classed('is-hidden', true);
 
 		const speed = 64;
-		const total = rawData.tally.length;
-		const rate = Math.min(SECOND * 8 / total, 200);
-		const tallyData = rawData.tally.map(d => d);
+		const pre = rawData.tally.map(d => d);
+
+		// add post tally data too
+		const binnedT = rawData.binnedTally.find(d => d.key === 'true') || {
+			value: 0
+		};
+		const binnedF = rawData.binnedTally.find(d => d.key === 'false') || {
+			value: 0
+		};
+		const arrT = d3.range(binnedT.value).map(() => true);
+		const arrF = d3.range(binnedF.value).map(() => false);
+		const joined = arrT.concat(arrF);
+		const post = joined.length ? shuffle(joined) : [];
+		const tallyData = pre.concat(post);
+
+		const total = tallyData.length;
+		const rate = Math.max(Math.min(SECOND * 8 / total, 200), 16);
 
 		const release = () => {
 			render.removePlayers();
@@ -207,12 +234,14 @@ const steps = {
 			tally.update(matched);
 			if (tallyData.length) d3.timeout(release, rate);
 			else {
-				console.log('delayed button');
 				$btn.classed('is-hidden', false);
 				delayedButton(0);
 			}
 		};
-		d3.timeout(release, SECOND * 5);
+		d3.timeout(() => {
+			render.removePlayers();
+			release();
+		}, SECOND * 5);
 	},
 	math: () => {
 		render.removePlayers();
@@ -232,6 +261,8 @@ const steps = {
 		delayedButton();
 	},
 	mathRun: () => {
+		const $btn = getStepButtonEl();
+		$btn.classed('is-hidden', true);
 		$.chartTimeline.classed('is-dateless', true);
 		$.svgMath.classed('is-visible', true);
 		$.mathInfo.classed('is-visible', true);
@@ -243,6 +274,7 @@ const steps = {
 
 		// last one has been done
 		const next = () => {
+			$btn.classed('is-hidden', false);
 			delayedButton();
 		};
 
@@ -281,6 +313,9 @@ function delayedButton(delay = SECOND * 2) {
 	d3.timeout(() => {
 		$btn.prop('disabled', false);
 	}, delay);
+	jiggleTimeout = setTimeout(() => {
+		$btn.classed('is-jiggle', true);
+	}, SECOND * 5);
 }
 
 function getStepEl() {
@@ -305,7 +340,7 @@ function getStepButtonEl() {
 		const ui = el.classed('ui__step');
 		return cur && ui;
 	});
-	return $s.select('button');
+	return $s.selectAll('button');
 }
 
 function updateStep() {
@@ -316,18 +351,26 @@ function updateStep() {
 	$.svgMath.classed('is-visible', false);
 	$.mathInfo.classed('is-visible', false);
 	$.chartTimeline.classed('is-dateless', false);
-
 	$.step.classed('is-visible', false);
 	$s.classed('is-visible', true);
+
+	clearTimeout(jiggleTimeout);
+	const $b = getStepButtonEl();
+	$b.classed('is-jiggle', false);
 
 	steps[id]();
 
 	storedSteps.forEach(stored => {
-		$.graphic.selectAll(`.text__step--${stored}`).classed('is-exit', true)
-	})
-	
-	$s.classed('is-exit', false)
+		$.graphic.selectAll(`.text__step--${stored}`).classed('is-exit', true);
+	});
+
+	$s.classed('is-exit', false);
 	storedSteps.push(currentStep);
+
+	const shortMatch = storedSteps.find(
+		d => d.includes('guess') && d.length > 'guess'.length
+	);
+	$.graphicUi.classed('is-short', !!shortMatch);
 }
 
 function updateDimensions() {
@@ -416,7 +459,19 @@ function handleSlide(a) {
 	$btn.prop('disabled', false);
 }
 
-function handleButtonClick() {
+function handleButtonClickPrev() {
+	consle.log(storedSteps)
+	const cur = storedSteps.pop();
+	const prev = storedSteps.pop();
+	// special case for double jump
+	if (['result', 'all'].includes(cur)) {
+		currentStep = storedSteps.pop();
+		d3.select(`.text__step--${prev}`).classed('is-exit', false);
+	} else currentStep = prev;
+	updateStep();
+}
+
+function handleButtonClickNext() {
 	const $btn = d3.select(this);
 	if (!$btn.prop('disabled')) {
 		switch (currentStep) {
@@ -426,15 +481,16 @@ function handleButtonClick() {
 		case 'birthday':
 			db.update({ key: 'day', value: userIndex });
 			currentStep = 'guess';
+			$.dropdown.selectAll('select').prop('disabled', true);
 			break;
 
 		case 'guess':
 			db.update({ key: 'guess', value: userGuess });
-			$.graphicUi.classed('is-short', true);
 			if (userGuess === JORDAN) currentStep = 'guessExact';
 			else if (Math.abs(JORDAN - userGuess) < 3) currentStep = 'guessClose';
 			else if (userGuess > JORDAN) currentStep = 'guessAbove';
 			else currentStep = 'guessBelow';
+			$.slider.prop('disabled', true);
 			break;
 
 		case 'guessAbove':
@@ -506,7 +562,8 @@ function setupDropdown() {
 }
 
 function setupButton() {
-	$.uiButton.on('click', handleButtonClick);
+	$.buttonNext.on('click', handleButtonClickNext);
+	$.buttonPrev.on('click', handleButtonClickPrev);
 }
 
 function setupSlider() {
@@ -543,7 +600,7 @@ function setupUser() {
 		$.dropdown
 			.selectAll('.day option')
 			.prop('selected', (d, i) => i === userDay);
-		$.dropdown.select('.day').prop('disabled', false);
+		$.dropdown.selectAll('select').prop('disabled', true);
 		render.updateUser(userIndex);
 		userGuess = db.getGuess();
 		if (userGuess) {
@@ -554,6 +611,7 @@ function setupUser() {
 			const $btn = $.graphicUi.select('.ui__step--guess button');
 			$btn.select('.people').text(userGuess);
 			$btn.prop('disabled', false);
+			$.slider.at('disabled', true);
 		}
 
 		changeUserInfo();
@@ -562,8 +620,8 @@ function setupUser() {
 
 function begin() {
 	const $btn = getStepButtonEl();
-	$btn.text('Begin');
-	delayedButton(500);
+	$btn.filter((d, i) => i === 0).text('Begin');
+	delayedButton(0);
 }
 
 function init() {

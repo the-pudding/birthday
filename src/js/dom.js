@@ -17,7 +17,8 @@ const svgTally = chartSvg.select('.svg__tally');
 const svgMath = chartSvg.select('.svg__math');
 const mathInfo = chartSvg.select('.math__info');
 
-const uiButton = graphicUi.selectAll('button');
+const buttonNext = graphicUi.selectAll('button.next');
+const buttonPrev = graphicUi.selectAll('button.prev');
 const dropdown = graphicUi.select('.dropdown');
 const slider = graphicUi.select('.slider');
 
@@ -36,7 +37,8 @@ export default {
 	chartBalloon,
 	step,
 	dropdown,
-	uiButton,
+	buttonNext,
+	buttonPrev,
 	slider,
 	svgTally,
 	svgLabel,

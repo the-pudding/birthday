@@ -7,19 +7,18 @@ const FONT_SIZE = 12;
 const MARGIN = { top: REM, bottom: REM * 3, left: REM * 3.25, right: REM };
 const height = 10 * REM - MARGIN.top - MARGIN.bottom;
 let width = 0;
-const rawData = [];
-let data = null;
+let rawData = [];
 const scale = { x: d3.scaleLinear(), y: d3.scaleLinear() };
 const line = d3
 	.line()
 	.x((d, i) => scale.x(i))
 	.y(d => scale.y(d));
 
-function update(match) {
-	rawData.push(match);
+function updateChart() {
 	// update success vals
 	let total = 0;
-	data = rawData.map((d, i) => {
+
+	const data = rawData.map((d, i) => {
 		total += d ? 1 : 0;
 		return total / (i + 1);
 	});
@@ -57,6 +56,15 @@ function update(match) {
 		.html(
 			`<tspan class='count'>${failureCount}</tspan> <tspan>failure${failureSuffix}</tspan>`
 		);
+}
+
+function update(match) {
+	rawData.push(match);
+	updateChart();
+}
+
+function clear(start) {
+	rawData = rawData.slice(0, start);
 }
 
 function matchFirst() {
@@ -140,4 +148,4 @@ function setup(count) {
 		.at('alignment-baseline', 'baseline');
 	scale.x.domain([0, count]);
 }
-export default { setup, resize, update, matchFirst };
+export default { setup, resize, update, matchFirst, clear };

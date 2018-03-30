@@ -17,6 +17,7 @@ const REM = 16;
 const RUSSELL_INDEX = 319;
 const SVG_HEIGHT = REM * 10;
 const FRAME_RATE = 125;
+const SPECIAL_IDS = ['Russell', 'You'];
 
 const scale = d3.scaleLinear();
 const info = {};
@@ -27,6 +28,8 @@ let skinFrame = 0;
 
 let width = 0;
 const $label = null;
+
+const special = [];
 
 function clearContext() {
 	info.context.clearRect(0, 0, info.canvas.width, info.canvas.height);
@@ -142,6 +145,10 @@ function showBirthday(id) {
 	p.labelEl.select('.date').classed('is-visible', true);
 }
 
+function hideSpecialLabels() {
+	players.forEach(p => p.labelEl.classed('is-visible', false));
+}
+
 function createLabel({ id, showLabel, day, showBirth = true }) {
 	const match = dayData[day];
 	const date = `${match.month.slice(0, 3)} ${match.day}`;
@@ -199,7 +206,18 @@ function createPlayer({
 		cb
 	};
 	players.push(p);
+	if (SPECIAL_IDS.includes(id)) special.push(p);
 }
+
+function showBigTwo() {
+	if (!players.length) {
+		players = [].concat(special);
+		players.forEach(p => {
+			p.labelEl = createLabel({ id: p.id, showLabel: true, day: p.destDay });
+		});
+	}
+}
+
 function addRecentPlayer(
 	{ player, speed = 1, balloon = false, hideLabel = false },
 	cb = null
@@ -223,10 +241,6 @@ function addRecentPlayer(
 function removePlayers() {
 	players = [];
 	$.gLabel.selectAll('.label').remove();
-}
-
-function hideSpecialLabels() {
-	players.forEach(p => p.labelEl.classed('is-visible', false));
 }
 
 function setupCanvas() {
@@ -328,5 +342,6 @@ export default {
 	removePlayers,
 	hideSpecialLabels,
 	showBirthday,
-	createBalloon
+	createBalloon,
+	showBigTwo
 };

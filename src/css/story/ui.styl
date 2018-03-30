@@ -16,10 +16,10 @@
 	&.instant
 		transition none
 
-	button
+	button.next
 		display block
 		position absolute
-		bottom 0.5rem
+		bottom 2rem
 		left 50%
 		width 16rem
 		padding 0.5rem 0
@@ -32,18 +32,45 @@
 		background-color rgba($yellow, 0.67)
 		opacity 1
 		box-shadow 0 2px 4px rgba($off-black, 0.33)
-		animation rainbow 3s infinite
+		&.is-jiggle
+			animation jiggle 5s ease-in-out infinite
 		&.is-hidden
 			opacity 0
+			pointer-events none
 		&:disabled
 			background-color transparent
-			cursor default
+			cursor not-allowed
 			animation none
 			&:hover
 				background-color rgba($gray-light, 0.5)
 		&:hover
 			background-color rgba($yellow, 1)
 			box-shadow 0 2px 4px rgba($off-black, 0.33), 0 4px 4px rgba($off-black, 0.33)
+		
+	button.prev
+		display block
+		position absolute
+		bottom 0
+		left 50%
+		padding 0 0.5em
+		color $gray
+		transform translateX(-50%)
+		border none
+		transition all 150ms ease-in-out
+		cursor pointer
+		background-color transparent
+		opacity 1
+		line-height 1
+		svg
+			width 1rem
+		&.is-hidden
+			opacity 0
+			pointer-events none
+		&:disabled
+			background-color transparent
+			cursor default
+		&:hover
+			color $gray-dark
 
 	.dropdown
 		position relative
@@ -62,12 +89,18 @@
 	.slider
 		top 20%
 
-@keyframes rainbow 
+@keyframes jiggle
 	0%
-		background-color $yellow
-	25%
-		background-color #fff
-	50%
-		background-color $yellow
+		margin-left 0
+	2%
+		margin-left 0.3rem
+	4%
+		margin-left -0.3rem
+	6%
+		margin-left 0.3rem
+	8%
+		margin-left -0.3rem
+	10%
+		margin-left 0
 	100%
-		background-color $yellow
+		margin-left 0

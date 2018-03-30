@@ -326,3 +326,12 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 			set-type-size(small, false)
 			font-weight 600
 			padding 0
+	
+	&[disabled]
+		&.noUi-horizontal
+			cursor not-allowed
+			opacity 0.5
+			.noUi-handle
+				cursor not-allowed
+				background-color $gray-light
+				
