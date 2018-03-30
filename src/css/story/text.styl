@@ -1,22 +1,26 @@
 .graphic__text
 	position relative	
+	overflow-x hidden
 .text__step
 	position absolute
 	width 100%
 	top 50%
 	left 0
-	transform translateY(-50%)
+	transform translate(100%, -50%)
 	opacity 0
 	margin 0
 	margin-top 1rem
-	transition opacity 250ms ease-in-out
+	transition opacity 250ms ease-in-out, transform 500ms ease-out
 	font-weight 400
 	pointer-events none
+	&.center
+		text-align center
 	&.is-visible
 		opacity 1
 		pointer-events auto
-	&.center
-		text-align center
+		transform translate(0, -50%)
+	&.is-exit
+		transform translate(-100%, -50%)
 	&.instant
 		transition none
 	

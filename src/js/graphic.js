@@ -309,7 +309,6 @@ function getStepButtonEl() {
 }
 
 function updateStep() {
-	storedSteps.push(currentStep);
 	const $s = getStepEl();
 	const id = $s.at('data-id');
 	$.graphicChart.classed('is-visible', id !== 'intro');
@@ -317,9 +316,18 @@ function updateStep() {
 	$.svgMath.classed('is-visible', false);
 	$.mathInfo.classed('is-visible', false);
 	$.chartTimeline.classed('is-dateless', false);
-	steps[id]();
+
 	$.step.classed('is-visible', false);
 	$s.classed('is-visible', true);
+
+	steps[id]();
+
+	storedSteps.forEach(stored => {
+		$.graphic.selectAll(`.text__step--${stored}`).classed('is-exit', true)
+	})
+	
+	$s.classed('is-exit', false)
+	storedSteps.push(currentStep);
 }
 
 function updateDimensions() {
