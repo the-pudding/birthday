@@ -78,6 +78,12 @@ function createBalloon(p) {
 		.on(animationEvent, removeBalloon);
 }
 
+function updateLabel(p) {
+	const i = Math.floor(scale.invert(p.x));
+	const { month, day } = dayData[i];
+	p.labelEl.select('.date').text(`${month.substring(0, 3)} ${day}`);
+}
+
 function updatePlayer(p) {
 	if (p.state) {
 		// frame animation
@@ -87,6 +93,10 @@ function updatePlayer(p) {
 		// move player
 		const rate = STEP_PIXELS * p.speed;
 		p.x += rate * (p.state === 2 ? 1 : -1);
+
+		// update label
+		if (p.id === 'You') updateLabel(p);
+
 		// stop moving
 		const diff = p.destX - p.x;
 		const doneLeft = p.state === 1 && diff > 0;
@@ -134,7 +144,7 @@ function updateUser(day) {
 	p.destX = scale(day);
 
 	const match = dayData[day];
-	const date = `${match.month.slice(0, 3)} ${match.day}`;
+	const date = `${match.month.substring(0, 3)} ${match.day}`;
 	p.labelEl.select('.date').text(date);
 	// moving left or right
 	p.state = p.destX < p.x ? 1 : 2;
@@ -151,7 +161,7 @@ function hideSpecialLabels() {
 
 function createLabel({ id, showLabel, day, showBirth = true }) {
 	const match = dayData[day];
-	const date = `${match.month.slice(0, 3)} ${match.day}`;
+	const date = `${match.month.substring(0, 3)} ${match.day}`;
 	const el = $.gLabel.append('g.label');
 	el.classed('is-visible', showLabel);
 
