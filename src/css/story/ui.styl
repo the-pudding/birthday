@@ -13,6 +13,8 @@
 	&.is-visible
 		opacity 1
 		pointer-events auto
+	&.instant
+		transition none
 
 	button
 		display block
@@ -30,11 +32,15 @@
 		background-color rgba($yellow, 0.67)
 		opacity 1
 		box-shadow 0 2px 4px rgba($off-black, 0.33)
+		animation rainbow 3s infinite
 		&.is-hidden
 			opacity 0
 		&:disabled
 			background-color transparent
 			cursor default
+			animation none
+			&:hover
+				background-color rgba($gray-light, 0.5)
 		&:hover
 			background-color rgba($yellow, 1)
 			box-shadow 0 2px 4px rgba($off-black, 0.33), 0 4px 4px rgba($off-black, 0.33)
@@ -55,3 +61,13 @@
 
 	.slider
 		top 20%
+
+@keyframes rainbow 
+	0%
+		background-color $yellow
+	25%
+		background-color #fff
+	50%
+		background-color $yellow
+	100%
+		background-color $yellow

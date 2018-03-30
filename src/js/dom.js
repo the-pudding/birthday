@@ -14,6 +14,8 @@ const step = graphic.selectAll('.step');
 
 const svgLabel = chartSvg.select('.svg__label');
 const svgTally = chartSvg.select('.svg__tally');
+const svgMath = chartSvg.select('.svg__math');
+const mathInfo = chartSvg.select('.math__info');
 
 const uiButton = graphicUi.selectAll('button');
 const dropdown = graphicUi.select('.dropdown');
@@ -39,5 +41,7 @@ export default {
 	svgTally,
 	svgLabel,
 	gLabel,
-	gTally
+	gTally,
+	svgMath,
+	mathInfo
 };

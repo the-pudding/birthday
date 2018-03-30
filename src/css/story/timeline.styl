@@ -1,11 +1,16 @@
 .chart__timeline
 	padding 0 1rem
+	&.is-dateless
+		.labels
+			opacity 0
 	.line
 		height 0.5rem
 		border-top 2px dashed $gray-light
 	.labels
 		display flex
 		justify-content space-between
+		transition opacity 250ms ease-in-out
+		opacity 1
 		p
 			color $gray
 			margin 0

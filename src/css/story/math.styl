@@ -1,0 +1,49 @@
+.chart__svg .svg__math
+	visibility hidden
+	position absolute
+	top 0
+	left 50%
+	transform translateX(-50%)
+	set-index('top')
+	&.is-visible
+		visibility visible
+	
+	.arc
+		stroke $gray-light
+		fill none
+	
+.chart__svg .math__info
+	visibility hidden
+	position absolute
+	top 0
+	left 0
+	width 100%
+	set-index('top')
+	&.is-visible
+		visibility visible
+	p
+		margin 0
+		text-align center
+		width 7rem
+	.labels
+		max-width 30rem
+		margin 0 auto
+		display flex
+		justify-content space-between
+		p
+			set-type-size(xx-small)
+			text-transform uppercase
+			font-weight 600
+			color $gray
+			letter-spacing 0.05em
+	.values
+		max-width 30rem
+		margin 0.25rem auto
+		display flex
+		justify-content space-between
+		p
+			// set-type-size(x-small)
+			text-transform uppercase
+			font-weight 600
+			color $off-black
+			letter-spacing 0.05em

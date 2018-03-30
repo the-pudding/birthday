@@ -215,9 +215,57 @@ const steps = {
 		d3.timeout(release, SECOND * 5);
 	},
 	math: () => {
-		console.log('math');
-		d3.timeout(release, SECOND * 5);
+		render.removePlayers();
+		$.chartTimeline.classed('is-dateless', true);
+		const speed = 64;
+		const balloon = false;
+		const count = 2;
+		const w = 1 / count * 366;
+		const players = d3.range(count).map(d => {
+			const day = Math.floor(d * w + w / 2);
+			return { ago: 0, day };
+		});
+
+		players.forEach(player =>
+			render.addRecentPlayer({ player, speed, balloon })
+		);
 		delayedButton();
+	},
+	mathRun: () => {
+		$.chartTimeline.classed('is-dateless', true);
+		$.svgMath.classed('is-visible', true);
+		$.mathInfo.classed('is-visible', true);
+
+		let i = 0;
+		const data = [2, 5, 10, 23];
+		const speed = 64;
+		const balloon = false;
+
+		// last one has been done
+		const next = () => {
+			delayedButton();
+		};
+
+		const release = () => {
+			render.removePlayers();
+			const count = data[i];
+			const w = 1 / count * 366;
+			const players = d3.range(count).map(d => {
+				const day = Math.floor(d * w + w / 2);
+				return { ago: 0, day };
+			});
+
+			players.forEach(player =>
+				render.addRecentPlayer({ player, speed, balloon })
+			);
+
+			math.update(players);
+
+			i += 1;
+			if (i < data.length) d3.timeout(release, SECOND * 5);
+			else next();
+		};
+		release();
 	},
 	conclusion: () => {
 		delayedButton();
@@ -266,6 +314,9 @@ function updateStep() {
 	const id = $s.at('data-id');
 	$.graphicChart.classed('is-visible', id !== 'intro');
 	$.svgTally.classed('is-visible', false);
+	$.svgMath.classed('is-visible', false);
+	$.mathInfo.classed('is-visible', false);
+	$.chartTimeline.classed('is-dateless', false);
 	steps[id]();
 	$.step.classed('is-visible', false);
 	$s.classed('is-visible', true);
@@ -296,7 +347,7 @@ function resize() {
 	updateDimensions();
 	setCanvasDimensions();
 	tally.resize();
-	// math.resize();
+	math.resize();
 }
 
 function changeUserInfo() {
@@ -400,6 +451,9 @@ function handleButtonClick() {
 			currentStep = 'math';
 			break;
 		case 'math':
+			currentStep = 'mathRun';
+			break;
+		case 'mathRun':
 			currentStep = 'conclusion';
 			break;
 		default:
@@ -519,7 +573,7 @@ function init() {
 		setupUser();
 		const trials = Math.floor((rawData.count + 2) / JORDAN);
 		tally.setup(trials);
-		// math.setup();
+		math.setup();
 		resize();
 	});
 }

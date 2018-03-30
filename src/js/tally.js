@@ -96,11 +96,11 @@ function resize() {
 	$.gTally
 		.selectAll('.success')
 		.at('x', width - FONT_SIZE)
-		.at('y', scale.y(0.75) + REM / 2);
+		.at('y', scale.y(1) + REM * 1.25);
 	$.gTally
 		.selectAll('.failure')
 		.at('x', width - FONT_SIZE)
-		.at('y', scale.y(0.25) + REM / 2);
+		.at('y', scale.y(0) - REM * 0.25);
 }
 
 function setup(count) {
@@ -125,19 +125,19 @@ function setup(count) {
 	$.gTally
 		.append('text.success.bg')
 		.at('text-anchor', 'end')
-		.at('alignment-baseline', 'middle');
+		.at('alignment-baseline', 'hanging');
 	$.gTally
 		.append('text.success.fg')
 		.at('text-anchor', 'end')
-		.at('alignment-baseline', 'middle');
+		.at('alignment-baseline', 'hanging');
 	$.gTally
 		.append('text.failure.bg')
 		.at('text-anchor', 'end')
-		.at('alignment-baseline', 'middle');
+		.at('alignment-baseline', 'baseline');
 	$.gTally
 		.append('text.failure.fg')
 		.at('text-anchor', 'end')
-		.at('alignment-baseline', 'middle');
+		.at('alignment-baseline', 'baseline');
 	scale.x.domain([0, count]);
 }
 export default { setup, resize, update, matchFirst };

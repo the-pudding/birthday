@@ -192,7 +192,7 @@ function createPlayer({
 		skin,
 		frame: 0,
 		ticks: 0,
-		x: off ? -PLAYER_W : scale(day),
+		x: off ? -PLAYER_W * 2 : scale(day),
 		destX: scale(day),
 		destDay: day,
 		labelEl: createLabel({ id, showLabel, day, showBirth }),
