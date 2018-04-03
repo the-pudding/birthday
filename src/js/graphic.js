@@ -31,8 +31,8 @@ let userGuess = -1;
 let currentStep = 'intro';
 let jiggleTimeout = null;
 let mobile = false;
-let playerW = 0;
-let playerH = 0;
+let playerW = 32;
+let playerH = 70;
 let russellIndex = 319;
 
 function updateGuessStep() {
@@ -62,10 +62,10 @@ const steps = {
 		$s
 			.selectAll('.guess--yes')
 			.classed('is-visible', userIndex === russellIndex);
-		
+
 		if (userIndex === russellIndex) {
-			russellIndex = 227
-			render.updateUser({id: 'Russell', day: russellIndex})
+			russellIndex = 227;
+			render.updateUser({ id: 'Russell', day: russellIndex });
 		}
 	},
 	guessAbove: () => {
@@ -400,7 +400,7 @@ function updateDimensions() {
 	$.content.st('height', height);
 	mobile = width < BP;
 	playerW = mobile ? 16 : 32;
-	playerH = mobile ? 40 : 80;
+	playerH = mobile ? 35 : 70;
 }
 
 function setCanvasDimensions() {
@@ -431,7 +431,7 @@ function changeUserInfo() {
 		const m = monthData[userMonth - 1].name;
 		text = `${m} ${userDay}`;
 		userIndex = dayData.findIndex(d => d.month === m && d.day === userDay);
-		render.updateUser({id: 'You', day: userIndex});
+		render.updateUser({ id: 'You', day: userIndex });
 	} else text = '...';
 
 	const $btn = $.graphicUi.select('.ui__step--birthday button');
@@ -638,7 +638,7 @@ function setupUser() {
 			.selectAll('.day option')
 			.prop('selected', (d, i) => i === userDay);
 		$.dropdown.selectAll('select').prop('disabled', true);
-		render.updateUser({id: 'You', day: userIndex});
+		render.updateUser({ id: 'You', day: userIndex });
 		userGuess = db.getGuess();
 		if (userGuess) {
 			d3

@@ -29,7 +29,7 @@ let width = 0;
 const $label = null;
 
 let playerW = 32;
-let playerH = 80;
+let playerH = 70;
 
 const special = [];
 
@@ -118,7 +118,7 @@ function updatePlayer(p) {
 	} else if (p.balloon) createBalloon(p);
 
 	renderPlayer({
-		srcX: p.frame,
+		srcX: p.rainbow ? 1 : p.frame,
 		srcY: p.state,
 		posX: p.x,
 		posY: 0,
