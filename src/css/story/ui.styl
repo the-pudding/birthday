@@ -21,7 +21,7 @@
 		position absolute
 		bottom 2rem
 		left 50%
-		width 16rem
+		width 17rem
 		padding 0.5rem 0
 		transform translateX(-50%)
 		background-color white
@@ -46,6 +46,11 @@
 		&:hover
 			background-color rgba($yellow, 1)
 			box-shadow 0 2px 4px rgba($off-black, 0.33), 0 4px 4px rgba($off-black, 0.33)
+		&--double
+			&:nth-child(2)
+				bottom 5.25rem
+			&.is-jiggle
+				animation none
 		
 	button.prev
 		display block

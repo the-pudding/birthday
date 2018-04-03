@@ -364,7 +364,7 @@ function getStepButtonEl() {
 }
 
 function updateStep() {
-	const noChart = ['intro', 'conclusion', 'appendix', 'more'];
+	const noChart = ['intro', 'conclusion', 'appendix', 'pudding'];
 	const $s = getStepEl();
 	const id = $s.at('data-id');
 	$.graphicChart.classed('is-visible', !noChart.includes(id));
@@ -495,6 +495,14 @@ function handleNoteClick() {
 	d3.select(this).classed('is-visible', false);
 }
 
+function handleAboutBtnClick() {
+	$.about.classed('is-visible', true);
+}
+
+function handleAboutCloseClick() {
+	$.about.classed('is-visible', false);
+}
+
 function handleButtonClickPrev() {
 	const cur = storedSteps.pop();
 	const prev = storedSteps.pop();
@@ -555,6 +563,9 @@ function handleButtonClickNext() {
 		case 'mathRun':
 			currentStep = 'conclusion';
 			break;
+		case 'conclusion':
+			currentStep = $btn.at('data-choice');
+			break;
 		default:
 			break;
 		}
@@ -601,6 +612,8 @@ function setupButton() {
 	$.buttonPrev.on('click', handleButtonClickPrev);
 	$.sup.on('click', handleSupClick);
 	$.note.on('click', handleNoteClick);
+	$.aboutBtn.on('click', handleAboutBtnClick);
+	$.aboutClose.on('click', handleAboutCloseClick);
 }
 
 function setupSlider() {

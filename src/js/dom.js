@@ -27,6 +27,9 @@ const gTally = svgTally.select('.g-tally');
 
 const sup = graphicText.selectAll('sup');
 const note = graphicText.selectAll('.note');
+const aboutBtn = d3.select('.about-btn');
+const about = d3.select('#about');
+const aboutClose = about.select('.about__close');
 
 export default {
 	content,
@@ -50,5 +53,8 @@ export default {
 	svgMath,
 	mathInfo,
 	sup,
-	note
+	note,
+	aboutBtn,
+	about,
+	aboutClose
 };

@@ -1,0 +1,61 @@
+.about-btn
+	position fixed
+	top 0.75rem
+	right 0.75rem
+	background-color rgba($yellow, 0.25)
+	border 1px solid $gray-dark
+	color $gray-dark
+	border-radius 50%
+	width 1.5rem
+	height 1.5rem
+	font-weight 600
+	z-index set-index(overlay)
+
+#about
+	width 100%
+	height 100%
+	position fixed
+	top 0
+	left 0
+	background-color $bg
+	z-index set-index('overlay')
+	display none
+	pointer-events none
+	&.is-visible
+		display block
+		pointer-events auto
+
+.about__content
+	position absolute
+	top 50%
+	left 0
+	width 100%
+	transform translateY(-50%)
+	padding 1rem
+.about__close
+	position fixed
+	top 0.75rem
+	right 0.75rem
+	background-color rgba($yellow, 0.25)
+	border 1px solid $gray-dark
+	color $gray-dark
+	border-radius 50%
+	width 1.5rem
+	height 1.5rem
+	font-weight 600
+
+
+p.about__who
+	text-align center
+	margin 0
+	font-weight 500
+p.about__method
+	max-width 35rem
+	margin 0 auto
+	font-weight 400
+	text-align left
+	margin-bottom 3rem
+.about__content .pudding-footer
+	background-color $bg
+	padding-top 0
+// .about__content
