@@ -282,7 +282,7 @@ const steps = {
 		$.svgMath.classed('is-visible', true);
 		$.mathInfo.classed('is-visible', true);
 
-		math.clear()
+		math.clear();
 
 		let i = 0;
 		const data = [2, 4, 6, 10, 23];
@@ -312,7 +312,7 @@ const steps = {
 
 			i += 1;
 			if (i < data.length) d3.timeout(release, SECOND * 5);
-			else d3.timer(next, SECOND * 3)
+			else d3.timer(next, SECOND * 3);
 		};
 		release();
 	},
@@ -384,8 +384,10 @@ function updateStep() {
 	$s.classed('is-exit', false);
 	storedSteps.push(currentStep);
 
-	const shortMatch = storedSteps.includes('paradox');
-	$.graphicUi.classed('is-short', !!shortMatch);
+	const shortMatch = !!storedSteps.find(
+		d => d.includes('guess') && d.length > 'guess'.length
+	);
+	$.graphicUi.classed('is-short', shortMatch);
 }
 
 function updateDimensions() {
