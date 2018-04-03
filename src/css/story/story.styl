@@ -17,12 +17,13 @@ main
 		margin 0 auto
 	&__chart
 		// background green //debug
+		pointer-events none
 		position relative
 		height 16rem
 		max-width 70rem
 		margin 0 auto
 		.chart__timeline, .chart__canvas, .chart__svg
-			transition opacity 1s ease-in-out
+			transition opacity 500ms ease-in-out
 			opacity 0
 		&.is-visible
 			.chart__timeline, .chart__canvas, .chart__svg
@@ -121,7 +122,7 @@ main
 			text-transform uppercase
 			letter-spacing 0.05em
 			color $gray
-			font-weight 500
+			font-weight 400
 
 		.date
 			set-type-size(xx-small, false)
@@ -142,6 +143,7 @@ main
 			left 50%
 			height 0.75rem
 			width 2px
+			transform translateX(-2px)
 			background-color $gray-light
 
 .chart__balloon

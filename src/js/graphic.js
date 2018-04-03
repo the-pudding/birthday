@@ -9,7 +9,7 @@ import flattenMonthData from './flatten-month-data';
 import calculateOdds from './calculate-odds';
 import monthData from './month-data';
 import shuffle from './shuffle';
-import loadImage from './utils/load-image'
+import loadImage from './utils/load-image';
 
 const BP = 600;
 const VERSION = new Date().getTime();
@@ -110,6 +110,7 @@ const steps = {
 
 			// last one has been placed
 			const next = d => {
+				render.highlight();
 				tally.update(matched);
 				currentStep = 'result';
 				updateStep();
@@ -273,7 +274,7 @@ const steps = {
 		});
 
 		players.forEach(player =>
-			render.addRecentPlayer({ player, speed, balloon })
+			render.addRecentPlayer({ player, speed, balloon, alpha: 1 })
 		);
 		delayedButton();
 	},
@@ -307,7 +308,7 @@ const steps = {
 			});
 
 			players.forEach(player =>
-				render.addRecentPlayer({ player, speed, balloon })
+				render.addRecentPlayer({ player, speed, balloon, alpha: 1 })
 			);
 
 			math.update(players);
@@ -369,7 +370,7 @@ function updateStep() {
 	const $s = getStepEl();
 	const id = $s.at('data-id');
 	$.graphicChart.classed('is-visible', !noChart.includes(id));
-	$.header.classed('is-visible', id !== 'intro')
+	$.header.classed('is-visible', id !== 'intro');
 	$.svgTally.classed('is-visible', false);
 	$.svgMath.classed('is-visible', false);
 	$.mathInfo.classed('is-visible', false);
@@ -678,8 +679,8 @@ function begin() {
 
 function init() {
 	loadImage('assets/img/birthday-intro.png', () => {
-		$.introHed.classed('is-loaded', true)
-	})
+		$.introHed.classed('is-loaded', true);
+	});
 
 	updateDimensions();
 
@@ -687,7 +688,6 @@ function init() {
 	setupButton();
 	setupSlider();
 	updateStep();
-
 
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];

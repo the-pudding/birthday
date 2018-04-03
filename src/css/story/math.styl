@@ -1,7 +1,7 @@
 .chart__svg .svg__math
 	visibility hidden
 	position absolute
-	top 0
+	top 0.5rem
 	left 50%
 	transform translateX(-50%)
 	set-index('top')
@@ -9,7 +9,8 @@
 		visibility visible
 	
 	.arc
-		stroke $gray-light
+		stroke lighten($gray-light, 5)
+		// stroke-opacity 0.5
 		fill none
 	
 .chart__svg .math__info

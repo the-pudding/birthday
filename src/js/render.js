@@ -5,7 +5,7 @@ import whichAnimationnEvent from './which-animation-event';
 
 const dayData = flattenMonthData();
 const animationEvent = whichAnimationnEvent();
-const SPRITES = ['red', 'yellow', 'green', 'blue', 'purple'];
+const SPRITES = ['red', 'yellow', 'green', 'blue', 'purple', 'white'];
 
 const BP = 600;
 const NUM_TICKS_PER_FRAME = 8;
@@ -122,7 +122,7 @@ function updatePlayer(p) {
 		posX: p.x,
 		posY: 0,
 		alpha: p.alpha,
-		skin: p.rainbow ? skinFrame : p.skin
+		skin: p.skin
 	});
 
 	p.labelEl.st('left', p.x);
@@ -150,6 +150,17 @@ function updateUser({ id, day }) {
 	p.labelEl.select('.date').text(date);
 	// moving left or right
 	p.state = p.destX < p.x ? 1 : 2;
+}
+
+function highlight() {
+	players.sort((a, b) =>
+		d3.ascending(a.rainbow || a.balloon, b.rainbow || b.balloon)
+	);
+	console.log(players);
+	players.forEach(p => {
+		p.skin = p.rainbow || p.balloon ? p.skin : SPRITES.length - 1;
+		p.alpha = p.rainbow || p.balloon ? 1 : 0.5;
+	});
 }
 
 function showBirthday(id) {
@@ -188,7 +199,7 @@ function createPlayer({
 	cb = null,
 	balloon = false,
 	showBirth = true,
-	skin = Math.ceil(Math.random() * (SPRITES.length - 1))
+	skin = Math.floor(Math.random() * (SPRITES.length - 1))
 }) {
 	const p = {
 		id,
@@ -212,14 +223,16 @@ function createPlayer({
 function showBigTwo() {
 	if (!players.length) {
 		players = [].concat(special);
-		players.forEach(p => {
+		players.forEach((p, i) => {
 			p.labelEl = createLabel({ id: p.id, showLabel: true, day: p.destDay });
+			p.alpha = 1;
+			p.skin = i;
 		});
 	}
 }
 
 function addRecentPlayer(
-	{ player, speed = 1, balloon = false, hideLabel = false },
+	{ player, speed = 1, balloon = false, hideLabel = false, alpha = 0.5 },
 	cb = null
 ) {
 	const showLabel = hideLabel ? false : speed < 4;
@@ -232,7 +245,7 @@ function addRecentPlayer(
 		off,
 		showLabel,
 		speed,
-		alpha: 0.5,
+		alpha,
 		balloon,
 		cb
 	});
@@ -285,7 +298,7 @@ function setupPlayers() {
 		off: false,
 		showLabel: true,
 		showBirth: false,
-		alpha: 0.75,
+		alpha: 1,
 		skin: 0
 	});
 	const mid = Math.floor(365 / 2);
@@ -294,7 +307,7 @@ function setupPlayers() {
 		day: mid,
 		off: false,
 		showLabel: true,
-		alpha: 0.75,
+		alpha: 1,
 		skin: 1
 	});
 }
@@ -347,5 +360,6 @@ export default {
 	hideSpecialLabels,
 	showBirthday,
 	createBalloon,
-	showBigTwo
+	showBigTwo,
+	highlight
 };
