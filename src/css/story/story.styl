@@ -49,7 +49,7 @@ main
 		width 100%
 		height 10rem
 		position relative
-		svg
+		svg, div
 			position absolute
 			top 0
 			left 0
@@ -71,10 +71,26 @@ main
 
 	
 .chart__svg .svg__label
-	top 1rem
 	.label
 		opacity 0
 		transition opacity 250ms ease-in-out
+		width auto
+		position absolute
+		bottom 1rem
+		left 0
+		top auto
+		height auto
+		line-height 1
+		transform translate(-50%, 50%)
+		background-color #fff
+		box-shadow 8px 0 8px 0px #fff, -8px 0 8px 0px #fff
+		p
+			display block
+			width auto
+			text-align center
+			margin 0
+			padding 0
+			white-space nowrap
 		&.is-visible
 			opacity 1
 
@@ -82,21 +98,29 @@ main
 			set-type-size(xx-small, false)
 			text-transform uppercase
 			letter-spacing 0.05em
-			fill $gray
+			color $gray
+			font-weight 500
 
 		.date
 			set-type-size(xx-small, false)
 			text-transform uppercase
 			letter-spacing 0.05em
-			fill $gray-dark
+			color $gray-dark
 			font-weight 600
 			opacity 0
 			transition opacity 250ms ease-in-out
 			&.is-visible
 				opacity 1
 
-		line
-			stroke $gray
+		&:after
+			content ''
+			display block
+			position absolute
+			top 100%
+			left 50%
+			height 0.75rem
+			width 2px
+			background-color $gray-light
 
 .chart__balloon
 	p

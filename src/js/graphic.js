@@ -318,7 +318,9 @@ const steps = {
 	},
 	conclusion: () => {
 		delayedButton();
-	}
+	},
+	pudding: () => {},
+	appendix: () => {}
 };
 
 function rainBalloons() {
@@ -361,9 +363,10 @@ function getStepButtonEl() {
 }
 
 function updateStep() {
+	const noChart = ['intro', 'conclusion', 'appendix', 'more'];
 	const $s = getStepEl();
 	const id = $s.at('data-id');
-	$.graphicChart.classed('is-visible', id !== 'intro');
+	$.graphicChart.classed('is-visible', !noChart.includes(id));
 	$.svgTally.classed('is-visible', false);
 	$.svgMath.classed('is-visible', false);
 	$.mathInfo.classed('is-visible', false);

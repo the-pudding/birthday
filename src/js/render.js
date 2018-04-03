@@ -127,7 +127,7 @@ function updatePlayer(p) {
 		skin: p.rainbow ? skinFrame : p.skin
 	});
 
-	p.labelEl.at('transform', `translate(${p.x}, 0)`);
+	p.labelEl.st('left', p.x);
 }
 function tick() {
 	const timeCurrent = d3.now();
@@ -166,28 +166,16 @@ function hideSpecialLabels() {
 function createLabel({ id, showLabel, day, showBirth = true }) {
 	const match = dayData[day];
 	const date = `${match.month.substring(0, 3)} ${match.day}`;
-	const el = $.gLabel.append('g.label');
+	const el = $.svgLabel.append('div.label');
 	el.classed('is-visible', showLabel);
 
 	el
-		.append('text.id')
-		.text(id)
-		.at('text-anchor', 'middle')
-		.at('y', -REM * 0.33);
-
-	el
-		.append('text.date')
+		.append('p.date')
 		.text(date)
-		.at('text-anchor', 'middle')
-		.at('y', -REM * 1.33)
 		.classed('is-visible', showBirth);
 
-	el.append('line').at({
-		x1: 0,
-		y1: 0,
-		x2: 0,
-		y2: LABEL_LINE_HEIGHT
-	});
+	el.append('p.id').text(id);
+
 	return el;
 }
 
@@ -254,7 +242,7 @@ function addRecentPlayer(
 
 function removePlayers() {
 	players = [];
-	$.gLabel.selectAll('.label').remove();
+	$.svgLabel.selectAll('.label').remove();
 }
 
 function setupCanvas() {
@@ -289,7 +277,7 @@ function setupCanvas() {
 }
 
 function setupSvg() {
-	$.gLabel.at('transform', `translate(0,${SVG_HEIGHT - REM})`);
+	// $.gLabel.at('transform', `translate(0,${SVG_HEIGHT - REM})`);
 }
 
 function setupPlayers() {
