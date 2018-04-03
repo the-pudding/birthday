@@ -5,10 +5,10 @@ import whichAnimationnEvent from './which-animation-event';
 
 const dayData = flattenMonthData();
 const animationEvent = whichAnimationnEvent();
-const SPRITES = ['gray', 'red', 'orange', 'yellow', 'green', 'violet'];
+// const SPRITES = ['gray', 'red', 'orange', 'yellow', 'green', 'violet'];
+const SPRITES = ['test'];
 
-const PLAYER_W = 32;
-const PLAYER_H = 64;
+const BP = 600;
 const NUM_TICKS_PER_FRAME = 8;
 const NUM_FRAMES = 4;
 const STEP_PIXELS = 2;
@@ -18,6 +18,7 @@ const RUSSELL_INDEX = 319;
 const SVG_HEIGHT = REM * 10;
 const FRAME_RATE = 125;
 const SPECIAL_IDS = ['Russell', 'You'];
+const DPR = Math.min(window.devicePixelRatio, 2);
 
 const scale = d3.scaleLinear();
 const info = {};
@@ -25,9 +26,11 @@ let players = [];
 
 let timePrevious = 0;
 let skinFrame = 0;
-
 let width = 0;
 const $label = null;
+
+let playerW = 32;
+let playerH = 80;
 
 const special = [];
 
@@ -39,14 +42,14 @@ function renderPlayer({ srcX, srcY, posX, posY, alpha, skin }) {
 	info.context.globalAlpha = alpha;
 	info.context.drawImage(
 		info.bufferCanvas[skin],
-		srcX * PLAYER_W,
-		srcY * PLAYER_H,
-		PLAYER_W,
-		PLAYER_H,
-		Math.floor(posX - PLAYER_W / 2),
+		srcX * playerW * 2,
+		srcY * playerH * 2,
+		playerW * 2,
+		playerH * 2,
+		Math.floor(posX - playerW / 2),
 		posY,
-		PLAYER_W,
-		PLAYER_H
+		playerW,
+		playerH
 	);
 }
 
@@ -78,9 +81,9 @@ function createBalloon(p) {
 		.on(animationEvent, removeBalloon);
 }
 
-function updateLabel(p) {
-	const i = Math.floor(scale.invert(p.x));
-	const { month, day } = dayData[i];
+function updateLabel(p, exact) {
+	const index = exact ? p.destDay : Math.floor(scale.invert(p.x));
+	const { month, day } = dayData[index];
 	p.labelEl.select('.date').text(`${month.substring(0, 3)} ${day}`);
 }
 
@@ -106,6 +109,7 @@ function updatePlayer(p) {
 			p.state = 0;
 			p.frame = 0;
 			if (p.id !== 'You') p.labelEl.classed('is-visible', false);
+			else updateLabel(p, true);
 			if (p.cb && typeof p.cb === 'function') {
 				p.cb();
 				p.cb = null;
@@ -209,7 +213,7 @@ function createPlayer({
 		skin,
 		frame: 0,
 		ticks: 0,
-		x: off ? -PLAYER_W * 2 : scale(day),
+		x: off ? -playerW * 2 : scale(day),
 		destX: scale(day),
 		destDay: day,
 		labelEl: createLabel({ id, showLabel, day, showBirth }),
@@ -305,13 +309,17 @@ function setupPlayers() {
 		off: false,
 		showLabel: true,
 		alpha: 0.75,
-		skin: 1
+		skin: 0
 	});
 }
 
-function resize(w) {
+function resize({ w, p }) {
+	playerW = p.playerW;
+	playerH = p.playerH;
+
 	width = w;
-	scale.domain([0, 365]).range([PLAYER_W / 2, w - PLAYER_W / 2]);
+
+	scale.domain([0, 365]).range([playerW / 2, w - playerW / 2]);
 	players.forEach(p => {
 		p.destX = scale(p.destDay);
 		p.x = scale(p.destDay);

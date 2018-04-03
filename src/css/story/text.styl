@@ -19,10 +19,13 @@
 		opacity 1
 		pointer-events auto
 		transform translate(0, -50%)
+		&.no-enter
+			transition none
 	&.is-exit
 		transform translate(-100%, -50%)
-	&.instant
-		transition none
+		&.no-exit
+			transition none
+	
 	
 	p
 		max-width 50rem

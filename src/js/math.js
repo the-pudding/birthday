@@ -6,9 +6,10 @@ const SECOND = 1000;
 const REM = 16;
 const FONT_SIZE = 12;
 const MARGIN = REM;
-const PLAYER_W = 32;
 const TEXT_HEIGHT = 48;
 const EASE = d3.easeCubicInOut;
+
+let playerW = 32;
 
 let width = 0;
 const height = 10 * REM;
@@ -29,11 +30,21 @@ function makeArc({ diam, fraction }) {
 	return `M0,0 A${diam / 2},${diam / fraction} 0 0,1 ${diam},0`;
 }
 
+function clear() {
+	$.mathInfo.selectAll('.values p').text(0);
+}
+
 function update(players) {
 	$.svgMath.selectAll('path').remove();
 	data = [];
+	const len = players.length;
+	const delay = len < 5 ? 1000 : 250;
 	players.forEach((a, i) => {
-		players.slice(i + 1).forEach(b => data.push({ start: a.day, end: b.day }));
+		players
+			.slice(i + 1)
+			.forEach(b =>
+				data.push({ start: a.day, end: b.day, delay: (i + 1) * delay })
+			);
 	});
 	$.svgMath
 		.selectAll('.arc')
@@ -44,7 +55,7 @@ function update(players) {
 		.each((d, i, n) => {
 			const $path = d3.select(n[i]);
 			const diff = d.end - d.start;
-			const diam = scale.x(diff) - PLAYER_W / 2;
+			const diam = scale.x(diff) - playerW / 2;
 			const fraction = Math.max(2, diam / (height - TEXT_HEIGHT));
 			const arc = makeArc({ diam, fraction });
 
@@ -55,7 +66,7 @@ function update(players) {
 				.at('stroke-dashoffset', totalLength * 1)
 				.transition()
 				.duration(SECOND)
-				.delay(i * 20)
+				.delay(d.delay)
 				.ease(EASE)
 				.at('stroke-dashoffset', 0);
 		});
@@ -83,7 +94,7 @@ function update(players) {
 		});
 
 	$.mathInfo
-		.select('.chance--value')
+		.select('.probability--value')
 		.transition()
 		.duration(SECOND)
 		.tween('text', (d, i, n) => {
@@ -93,14 +104,15 @@ function update(players) {
 		});
 }
 
-function resize() {
+function resize(p) {
+	playerW = p.playerW;
 	width = $.graphicChart.node().offsetWidth;
-	scale.x.range([PLAYER_W / 2, width - PLAYER_W / 2]);
+	scale.x.range([playerW / 2, width - playerW / 2]);
 }
 
 function setup() {
 	scale.x.domain([0, 365]);
-	const textData = ['people', 'comparisons', 'chance'];
+	const textData = ['people', 'comparisons', 'probability'];
 
 	textData.forEach(t => {
 		$.mathInfo
@@ -113,4 +125,4 @@ function setup() {
 			.text(0);
 	});
 }
-export default { setup, resize, update };
+export default { setup, resize, update, clear };

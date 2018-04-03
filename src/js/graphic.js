@@ -10,14 +10,14 @@ import calculateOdds from './calculate-odds';
 import monthData from './month-data';
 import shuffle from './shuffle';
 
-const BP = 800;
+const BP = 600;
 const VERSION = new Date().getTime();
 const DATA_URL = `https://pudding.cool/2018/04/birthday-data/data.json?version=${VERSION}`;
+// const DATA_URL = 'assets/data.json';
 const DPR = Math.min(window.devicePixelRatio, 2);
 const RUSSELL_INDEX = 319;
 const SECOND = 1000;
 const REM = 16;
-const MARGIN = REM * 2;
 const JORDAN = 23;
 
 const storedSteps = [];
@@ -31,6 +31,24 @@ let userIndex = -1;
 let userGuess = -1;
 let currentStep = 'intro';
 let jiggleTimeout = null;
+let mobile = false;
+let playerW = 0;
+let playerH = 0;
+
+function updateGuessStep() {
+	const $s = getStepTextEl();
+	const odds = calculateOdds(userGuess);
+	$s.select('.people').text(userGuess);
+	const oddsFormatted = d3.format('.1%')(odds);
+	const oddsDisplay = oddsFormatted === '100.0%' ? '> 99.9%' : oddsFormatted;
+	$s.select('.percent').text(oddsDisplay);
+	delayedButton();
+	db.closeConnection();
+
+	// all guess results
+	console.log(rawData.binnedGuess);
+	// TODO clone slider
+}
 
 const steps = {
 	intro: () => {
@@ -50,28 +68,16 @@ const steps = {
 			.classed('is-visible', userIndex === RUSSELL_INDEX);
 	},
 	guessAbove: () => {
-		const $s = getStepTextEl();
-		const odds = calculateOdds(userGuess);
-		$s.select('.people').text(userGuess);
-		const oddsFormatted = d3.format('.1%')(odds);
-		const oddsDisplay = oddsFormatted === '100.0%' ? '> 99.9%' : oddsFormatted;
-		$s.select('.percent').text(oddsDisplay);
-		delayedButton();
-		db.closeConnection();
+		updateGuessStep();
 	},
 	guessBelow: () => {
-		const $s = getStepTextEl();
-		const odds = calculateOdds(userGuess);
-		$s.select('.people').text(userGuess);
-		const oddsFormatted = d3.format('.1%')(odds);
-		const oddsDisplay = oddsFormatted === '100.0%' ? '> 99.9%' : oddsFormatted;
-		$s.select('.percent').text(oddsDisplay);
-		delayedButton();
-		db.closeConnection();
+		updateGuessStep();
+	},
+	guessClose: () => {
+		updateGuessStep();
 	},
 	guessExact: () => {
-		delayedButton();
-		db.closeConnection();
+		updateGuessStep();
 	},
 	paradox: () => {
 		delayedButton();
@@ -276,8 +282,10 @@ const steps = {
 		$.svgMath.classed('is-visible', true);
 		$.mathInfo.classed('is-visible', true);
 
+		math.clear()
+
 		let i = 0;
-		const data = [2, 5, 10, 23];
+		const data = [2, 4, 6, 10, 23];
 		const speed = 64;
 		const balloon = false;
 
@@ -304,7 +312,7 @@ const steps = {
 
 			i += 1;
 			if (i < data.length) d3.timeout(release, SECOND * 5);
-			else next();
+			else d3.timer(next, SECOND * 3)
 		};
 		release();
 	},
@@ -376,9 +384,7 @@ function updateStep() {
 	$s.classed('is-exit', false);
 	storedSteps.push(currentStep);
 
-	const shortMatch = storedSteps.find(
-		d => d.includes('guess') && d.length > 'guess'.length
-	);
+	const shortMatch = storedSteps.includes('paradox');
 	$.graphicUi.classed('is-short', !!shortMatch);
 }
 
@@ -386,12 +392,15 @@ function updateDimensions() {
 	width = $.content.node().offsetWidth;
 	height = window.innerHeight;
 	$.content.st('height', height);
+	mobile = width < BP;
+	playerW = mobile ? 16 : 32;
+	playerH = mobile ? 40 : 80;
 }
 
 function setCanvasDimensions() {
 	const cw = $.chartCanvas.node().offsetWidth;
 	const ch = $.chartCanvas.node().offsetHeight;
-	render.resize(cw);
+	render.resize({ w: cw, p: { playerW, playerH } });
 
 	$.chartCanvas.at({
 		width: DPR * cw,
@@ -406,8 +415,8 @@ function setCanvasDimensions() {
 function resize() {
 	updateDimensions();
 	setCanvasDimensions();
-	tally.resize();
-	math.resize();
+	math.resize({ playerW });
+	tally.resize({ playerW, playerH });
 }
 
 function changeUserInfo() {

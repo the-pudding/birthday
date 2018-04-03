@@ -8,6 +8,9 @@ const MARGIN = { top: REM, bottom: REM * 3, left: REM * 3.25, right: REM };
 const height = 10 * REM - MARGIN.top - MARGIN.bottom;
 let width = 0;
 let rawData = [];
+let playerW = 32;
+let playerH = 80;
+
 const scale = { x: d3.scaleLinear(), y: d3.scaleLinear() };
 const line = d3
 	.line()
@@ -81,7 +84,9 @@ function matchFirst() {
 	return rawData[0];
 }
 
-function resize() {
+function resize(p) {
+	playerW = p.playerW;
+	playerH = p.playerH;
 	const w = $.graphicUi.node().offsetWidth;
 	width = w - MARGIN.left - MARGIN.right;
 	scale.x.range([0, width]);
