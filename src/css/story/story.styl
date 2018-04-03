@@ -37,7 +37,7 @@ main
 				z-index 100
 				pointer-events none
 				right -98%
-				background linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 4%,rgba(255,255,255,1) 100%)
+				background linear-gradient(to right, rgba($bg,0) 0%,rgba($bg,1) 4%,rgba($bg,1) 100%)
 		&:before
 				position absolute
 				bottom 1rem
@@ -48,7 +48,7 @@ main
 				z-index 100
 				pointer-events none
 				left -98%
-				background linear-gradient(to left, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 4%,rgba(255,255,255,1) 100%)
+				background linear-gradient(to left, rgba($bg,0) 0%,rgba($bg,1) 4%,rgba($bg,1) 100%)
 			
 	&__ui
 		// background blue //debug
@@ -104,8 +104,8 @@ main
 		height auto
 		line-height 1
 		transform translate(-50%, 50%)
-		background-color #fff
-		box-shadow 8px 0 8px 0px #fff, -8px 0 8px 0px #fff
+		background-color $bg
+		box-shadow 8px 0 8px 0px $bg, -8px 0 8px 0px $bg
 		p
 			display block
 			width auto

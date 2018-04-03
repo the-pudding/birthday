@@ -9,6 +9,7 @@ import flattenMonthData from './flatten-month-data';
 import calculateOdds from './calculate-odds';
 import monthData from './month-data';
 import shuffle from './shuffle';
+import loadImage from './utils/load-image'
 
 const BP = 600;
 const VERSION = new Date().getTime();
@@ -368,6 +369,7 @@ function updateStep() {
 	const $s = getStepEl();
 	const id = $s.at('data-id');
 	$.graphicChart.classed('is-visible', !noChart.includes(id));
+	$.header.classed('is-visible', id !== 'intro')
 	$.svgTally.classed('is-visible', false);
 	$.svgMath.classed('is-visible', false);
 	$.mathInfo.classed('is-visible', false);
@@ -675,12 +677,17 @@ function begin() {
 }
 
 function init() {
+	loadImage('assets/img/birthday-intro.png', () => {
+		$.introHed.classed('is-loaded', true)
+	})
+
 	updateDimensions();
 
 	setupDropdown();
 	setupButton();
 	setupSlider();
 	updateStep();
+
 
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];

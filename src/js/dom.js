@@ -1,5 +1,7 @@
 const content = d3.select('#content');
 
+const header = d3.select('header');
+
 const graphic = content.select('.graphic');
 const graphicText = graphic.select('.graphic__text');
 const graphicChart = graphic.select('.graphic__chart');
@@ -31,6 +33,8 @@ const aboutBtn = d3.select('.about-btn');
 const about = d3.select('#about');
 const aboutClose = about.select('.about__close');
 
+const introHed = graphicText.select('.intro__hed');
+
 export default {
 	content,
 	graphic,
@@ -56,5 +60,7 @@ export default {
 	note,
 	aboutBtn,
 	about,
-	aboutClose
+	aboutClose,
+	introHed,
+	header
 };

@@ -5,8 +5,7 @@ import whichAnimationnEvent from './which-animation-event';
 
 const dayData = flattenMonthData();
 const animationEvent = whichAnimationnEvent();
-// const SPRITES = ['gray', 'red', 'orange', 'yellow', 'green', 'violet'];
-const SPRITES = ['test'];
+const SPRITES = ['red', 'yellow', 'green', 'blue', 'purple'];
 
 const BP = 600;
 const NUM_TICKS_PER_FRAME = 8;
@@ -296,7 +295,7 @@ function setupPlayers() {
 		off: false,
 		showLabel: true,
 		alpha: 0.75,
-		skin: 0
+		skin: 1
 	});
 }
 
