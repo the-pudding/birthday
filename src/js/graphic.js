@@ -15,7 +15,6 @@ const VERSION = new Date().getTime();
 const DATA_URL = `https://pudding.cool/2018/04/birthday-data/data.json?version=${VERSION}`;
 // const DATA_URL = 'assets/data.json';
 const DPR = Math.min(window.devicePixelRatio, 2);
-const RUSSELL_INDEX = 319;
 const SECOND = 1000;
 const REM = 16;
 const JORDAN = 23;
@@ -34,6 +33,7 @@ let jiggleTimeout = null;
 let mobile = false;
 let playerW = 0;
 let playerH = 0;
+let russellIndex = 319;
 
 function updateGuessStep() {
 	const $s = getStepTextEl();
@@ -44,10 +44,6 @@ function updateGuessStep() {
 	$s.select('.percent').text(oddsDisplay);
 	delayedButton();
 	db.closeConnection();
-
-	// all guess results
-	console.log(rawData.binnedGuess);
-	// TODO clone slider
 }
 
 const steps = {
@@ -62,10 +58,15 @@ const steps = {
 		const $s = getStepTextEl();
 		$s
 			.selectAll('.guess--no')
-			.classed('is-visible', userIndex !== RUSSELL_INDEX);
+			.classed('is-visible', userIndex !== russellIndex);
 		$s
 			.selectAll('.guess--yes')
-			.classed('is-visible', userIndex === RUSSELL_INDEX);
+			.classed('is-visible', userIndex === russellIndex);
+		
+		if (userIndex === russellIndex) {
+			russellIndex = 227
+			render.updateUser({id: 'Russell', day: russellIndex})
+		}
 	},
 	guessAbove: () => {
 		updateGuessStep();
@@ -93,7 +94,7 @@ const steps = {
 		let i = 0;
 		const speed = 2;
 		const dict = [];
-		dict[RUSSELL_INDEX] = true;
+		dict[russellIndex] = true;
 		dict[userIndex] = true;
 		let matched = false;
 
@@ -430,7 +431,7 @@ function changeUserInfo() {
 		const m = monthData[userMonth - 1].name;
 		text = `${m} ${userDay}`;
 		userIndex = dayData.findIndex(d => d.month === m && d.day === userDay);
-		render.updateUser(userIndex);
+		render.updateUser({id: 'You', day: userIndex});
 	} else text = '...';
 
 	const $btn = $.graphicUi.select('.ui__step--birthday button');
@@ -637,7 +638,7 @@ function setupUser() {
 			.selectAll('.day option')
 			.prop('selected', (d, i) => i === userDay);
 		$.dropdown.selectAll('select').prop('disabled', true);
-		render.updateUser(userIndex);
+		render.updateUser({id: 'You', day: userIndex});
 		userGuess = db.getGuess();
 		if (userGuess) {
 			d3

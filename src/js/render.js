@@ -12,7 +12,6 @@ const BP = 600;
 const NUM_TICKS_PER_FRAME = 8;
 const NUM_FRAMES = 4;
 const STEP_PIXELS = 2;
-const LABEL_LINE_HEIGHT = 12;
 const REM = 16;
 const RUSSELL_INDEX = 319;
 const SVG_HEIGHT = REM * 10;
@@ -98,7 +97,7 @@ function updatePlayer(p) {
 		p.x += rate * (p.state === 2 ? 1 : -1);
 
 		// update label
-		if (p.id === 'You') updateLabel(p);
+		if (SPECIAL_IDS.includes(p.id)) updateLabel(p);
 
 		// stop moving
 		const diff = p.destX - p.x;
@@ -108,7 +107,7 @@ function updatePlayer(p) {
 			p.x = p.destX;
 			p.state = 0;
 			p.frame = 0;
-			if (p.id !== 'You') p.labelEl.classed('is-visible', false);
+			if (!SPECIAL_IDS.includes(p.id)) p.labelEl.classed('is-visible', false);
 			else updateLabel(p, true);
 			if (p.cb && typeof p.cb === 'function') {
 				p.cb();
@@ -142,8 +141,8 @@ function tick() {
 	window.requestAnimationFrame(tick);
 }
 
-function updateUser(day) {
-	const p = players.find(player => player.id === 'You');
+function updateUser({ id, day }) {
+	const p = players.find(player => player.id === id);
 	p.destDay = day;
 	p.destX = scale(day);
 
