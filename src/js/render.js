@@ -69,6 +69,7 @@ function removeBalloon() {
 function createBalloon(p) {
 	p.balloon = false;
 	p.rainbow = true;
+	p.alpha = 1;
 	const left = scale(p.destDay);
 
 	$.chartBalloon
@@ -156,7 +157,7 @@ function highlight() {
 	players.sort((a, b) =>
 		d3.ascending(a.rainbow || a.balloon, b.rainbow || b.balloon)
 	);
-	console.log(players);
+
 	players.forEach(p => {
 		p.skin = p.rainbow || p.balloon ? p.skin : SPRITES.length - 1;
 		p.alpha = p.rainbow || p.balloon ? 1 : 0.5;
@@ -199,7 +200,7 @@ function createPlayer({
 	cb = null,
 	balloon = false,
 	showBirth = true,
-	skin = Math.floor(Math.random() * (SPRITES.length - 1))
+	skin
 }) {
 	const p = {
 		id,
@@ -232,7 +233,7 @@ function showBigTwo() {
 }
 
 function addRecentPlayer(
-	{ player, speed = 1, balloon = false, hideLabel = false, alpha = 0.5 },
+	{ player, speed = 1, balloon = false, hideLabel = false, alpha = 0.5, skin },
 	cb = null
 ) {
 	const showLabel = hideLabel ? false : speed < 4;
@@ -247,6 +248,7 @@ function addRecentPlayer(
 		speed,
 		alpha,
 		balloon,
+		skin,
 		cb
 	});
 }

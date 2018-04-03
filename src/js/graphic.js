@@ -29,12 +29,12 @@ let userMonth = -1;
 let userDay = -1;
 let userIndex = -1;
 let userGuess = -1;
-let currentStep = 'intro';
 let jiggleTimeout = null;
 let mobile = false;
 let playerW = 32;
 let playerH = 70;
 let russellIndex = 319;
+let currentStep = 'intro';
 
 function updateGuessStep() {
 	const $s = getStepTextEl();
@@ -118,7 +118,8 @@ const steps = {
 
 			const cb = i === 20 ? next : null;
 
-			render.addRecentPlayer({ player, speed, balloon }, cb);
+			const skin = (i + 2) % 5;
+			render.addRecentPlayer({ player, speed, balloon, skin }, cb);
 
 			i += 1;
 			if (i < 21) d3.timeout(release, SECOND / speed);
@@ -173,8 +174,11 @@ const steps = {
 			};
 
 			const cb = i === 22 && group === times - 1 ? next : null;
-
-			render.addRecentPlayer({ player, speed, balloon, hideLabel: true }, cb);
+			const skin = (i + 2) % 5;
+			render.addRecentPlayer(
+				{ player, speed, balloon, skin, hideLabel: true },
+				cb
+			);
 
 			i += 1;
 			if (i < JORDAN) d3.timeout(release, SECOND / speed);
@@ -241,7 +245,8 @@ const steps = {
 				.map(d => ({ ago: d, day: Math.floor(Math.random() * 366) }));
 			players.forEach((player, i) => {
 				const balloon = i === 0 && matched;
-				render.addRecentPlayer({ player, speed, balloon });
+				const skin = (i + 2) % 5;
+				render.addRecentPlayer({ player, speed, balloon, skin });
 			});
 			tally.update(matched);
 			if (tallyData.length) d3.timeout(release, rate);
@@ -273,9 +278,10 @@ const steps = {
 			return { ago: 0, day };
 		});
 
-		players.forEach(player =>
-			render.addRecentPlayer({ player, speed, balloon, alpha: 1 })
-		);
+		players.forEach((player, i) => {
+			const skin = (i + 2) % 5;
+			render.addRecentPlayer({ player, speed, balloon, skin, alpha: 1 });
+		});
 		delayedButton();
 	},
 	mathRun: () => {
@@ -307,9 +313,10 @@ const steps = {
 				return { ago: 0, day };
 			});
 
-			players.forEach(player =>
-				render.addRecentPlayer({ player, speed, balloon, alpha: 1 })
-			);
+			players.forEach((player, ind) => {
+				const skin = (ind + 2) % 5;
+				render.addRecentPlayer({ player, speed, balloon, skin, alpha: 1 });
+			});
 
 			math.update(players);
 
