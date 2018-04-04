@@ -541,7 +541,7 @@ function handleButtonClickNext() {
 
 		case 'guess':
 			db.update({ key: 'guess', value: userGuess });
-			appendix.updateGuess(userGuess)
+			appendix.updateGuess(userGuess);
 			if (userGuess === JORDAN) currentStep = 'guessExact';
 			else if (Math.abs(JORDAN - userGuess) < 3) currentStep = 'guessClose';
 			else if (userGuess > JORDAN) currentStep = 'guessAbove';

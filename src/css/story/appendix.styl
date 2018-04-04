@@ -1,3 +1,30 @@
+.text__step .appendix
+	p, h3
+		line-height 1
+		margin 0
+		set-type-size(x-small)
+		+mq('bp-3')
+			set-type-size(small)
+	&__text
+		line-height 1.1
+		margin-top 0.5rem
+		+mq('bp-3')
+			margin-top 1.5rem
+			line-height 1.25
+	&__hed
+		font-weight 600
+		color $off-black
+		margin 0
+		display inline
+		line-height 1
+	&__dek
+		font-weight 400
+		color $gray-dark
+		display inline
+		line-height 1
+		margin 0
+	.chart
+		margin-top 1rem
 .text__step.text__step--appendix
 	transform translate(100%, 0)
 	top 0
@@ -5,5 +32,116 @@
 		transform translate(0, 0)
 		top 0
 	
-// .appendix
+.appendix__guess
+	text
+		set-type-size(xx-small, false)
+		font-weight 500
+		fill $gray-dark
+		text-transform uppercase
+	circle
+		fill $gray-dark
+		stroke-width 2px
+		&.you
+			fill $yellow
+			stroke $gray-dark
+			stroke-width 2px
+		&.avg
+			fill $red
+			stroke $gray-dark
+			stroke-width 2px
+	
+	.axis
+		line
+			stroke $gray-light
+			stroke-width 2px
+			stroke-dasharray 4px 4px
 
+
+.appendix__distribution
+	rect
+		stroke $gray-dark
+		fill $gray-dark
+	.axis--y
+		.tick
+			// &:nth-child(2)
+			// 	display none
+			line
+				stroke-dasharray 4px 4px
+				stroke-width 1px
+				stroke $gray-light
+			text
+				fill $gray
+				font-weight 500
+		path
+			display none
+	.axis--x
+		text
+			fill $gray
+			set-type-size(xx-small, false)
+			text-transform uppercase
+			font-weight 500
+		.month:nth-child(even)
+			opacity 0
+			+mq('bp-3')
+				opacity 1
+	
+	.g-even
+		line
+			stroke $yellow
+			stroke-width 2px
+			stroke-dasharray 4px 4px
+		text
+			set-type-size(xx-small, false)
+			font-weight 600
+			text-transform uppercase
+			letter-spacing 0.05em
+			&.bg
+				stroke $fg
+				stroke-width 3px
+			&.fg
+				fill $yellow
+
+.appendix__probability
+	.axis--y
+		.tick
+			line
+				stroke-dasharray 4px 4px
+				stroke-width 1px
+				stroke $gray-light
+			text
+				fill $gray
+				font-weight 500
+		path
+			display none
+	.axis--x
+		.tick
+			&:nth-child(3)
+				display none
+		line, path
+			display none
+		text
+			fill $gray
+			set-type-size(xx-small, false)
+			text-transform uppercase
+			font-weight 500
+	
+	.g-line path
+		stroke $gray-dark
+		stroke-width 2px
+		fill none
+
+	.g-jordan
+		line
+			stroke $red
+			stroke-width 2px
+			stroke-dasharray 4px 4px
+		text
+			set-type-size(xx-small, false)
+			font-weight 600
+			text-transform uppercase
+			letter-spacing 0.05em
+			&.bg
+				stroke $bg
+				stroke-width 3px
+			&.fg
+				fill $red
