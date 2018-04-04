@@ -169,11 +169,20 @@ function resize() {
 function updateGuess(g) {
 	userGuess = g;
 	const userText = `You: ${userGuess}`;
-	$.appendixGuess
+	const $guess = $.appendixGuess
 		.selectAll('.guess')
-		.filter(d => d.id === 'you')
-		.select('text')
-		.text(userText);
+		.filter(d => d.id === 'you');
+
+	const d = $guess.datum();
+	d.key = g;
+	$guess.datum(d);
+
+	$guess.at(
+		'transform',
+		d => `translate(${scale.guess.x(d.key)}, ${GUESS_HEIGHT / 2})`
+	);
+
+	$guess.select('text').text(userText);
 }
 
 function setupGuess(data) {
