@@ -546,7 +546,7 @@ function handleButtonClickNext() {
 			else if (Math.abs(JORDAN - userGuess) < 3) currentStep = 'guessClose';
 			else if (userGuess > JORDAN) currentStep = 'guessAbove';
 			else currentStep = 'guessBelow';
-			$.slider.prop('disabled', true);
+			$.slider.at('disabled', true);
 			break;
 
 		case 'guessAbove':

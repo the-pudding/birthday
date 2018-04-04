@@ -57,7 +57,14 @@ function exists() {
 	return typeof userData.day === 'number' && typeof userData.guess === 'number';
 }
 
+function clear() {
+	localStorage.removeItem('pudding_birthday_id');
+	localStorage.removeItem('pudding_birthday_day');
+	localStorage.removeItem('pudding_birthday_guess');
+}
+
 function setup() {
+	clear();
 	userData = setupUserData();
 	if (!exists()) connect();
 	// console.log(userData);
@@ -65,9 +72,9 @@ function setup() {
 
 function closeConnection() {
 	if (connected)
-		firebaseApp
-			.delete()
-			.then(() => console.log('firebase: deleted connection'));
+		firebaseApp.delete().then(() => {
+			connected = false;
+		});
 }
 
 function update({ key, value }) {
@@ -78,9 +85,7 @@ function update({ key, value }) {
 		firebaseDB
 			.ref(id)
 			.set({ day, guess })
-			.then(() => {
-				console.log('firebase: data updated');
-			})
+			.then(() => {})
 			.catch(console.log);
 	}
 }
