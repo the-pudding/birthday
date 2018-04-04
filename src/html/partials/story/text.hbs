@@ -4,6 +4,8 @@
 		{{> story/intro}}
 	{{else if appendix}}
 		 {{> story/appendix}}
+	{{else if double}}
+		{{> story/conclusion}}
 	{{else}}
 	<p>{{{text}}}</p>
 	{{/if}}

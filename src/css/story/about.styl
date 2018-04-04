@@ -37,19 +37,26 @@
 	position fixed
 	top 0.75rem
 	right 0.75rem
-	background-color rgba($yellow, 0.25)
-	border 1px solid $gray-dark
-	color $gray-dark
+	background-color $yellow
+	border 1px solid rgba($off-black, 0.25)
+	color $off-black
+	box-shadow 0 2px 4px rgba($off-black, 0.33)
 	border-radius 50%
 	width 1.5rem
 	height 1.5rem
 	font-weight 600
+	z-index set-index(overlay)
+	svg
+		width 1.1rem
+		stroke $off-black
+		fill $off-black
 
 
 p.about__who
-	text-align center
-	margin 0
+	text-align left
+	margin 0 auto
 	font-weight 500
+	max-width 35rem
 p.about__method
 	max-width 35rem
 	margin 0 auto

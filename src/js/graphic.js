@@ -4,6 +4,7 @@ import db from './db';
 import tally from './tally';
 import math from './math';
 import render from './render';
+import appendix from './appendix';
 import $ from './dom';
 import flattenMonthData from './flatten-month-data';
 import calculateOdds from './calculate-odds';
@@ -433,6 +434,7 @@ function resize() {
 	setCanvasDimensions();
 	math.resize({ playerW });
 	tally.resize({ playerW, playerH });
+	appendix.resize();
 }
 
 function changeUserInfo() {
@@ -539,6 +541,7 @@ function handleButtonClickNext() {
 
 		case 'guess':
 			db.update({ key: 'guess', value: userGuess });
+			appendix.updateGuess(userGuess)
 			if (userGuess === JORDAN) currentStep = 'guessExact';
 			else if (Math.abs(JORDAN - userGuess) < 3) currentStep = 'guessClose';
 			else if (userGuess > JORDAN) currentStep = 'guessAbove';
@@ -704,6 +707,7 @@ function init() {
 		const trials = Math.floor((rawData.count + 2) / JORDAN);
 		tally.setup(trials);
 		math.setup();
+		appendix.setup(rawData);
 		resize();
 	});
 }

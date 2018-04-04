@@ -35,6 +35,11 @@ const aboutClose = about.select('.about__close');
 
 const introHed = graphicText.select('.intro__hed');
 
+const appendix = graphicText.select('.appendix');
+const appendixGuess = appendix.select('.appendix__guess .chart');
+const appendixDistribution = appendix.select('.appendix__distribution .chart');
+const appendixProbability = appendix.select('.appendix__probability .chart');
+
 export default {
 	content,
 	graphic,
@@ -62,5 +67,9 @@ export default {
 	about,
 	aboutClose,
 	introHed,
-	header
+	header,
+	appendix,
+	appendixGuess,
+	appendixDistribution,
+	appendixProbability
 };
