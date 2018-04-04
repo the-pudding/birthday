@@ -168,6 +168,12 @@ function resize() {
 
 function updateGuess(g) {
 	userGuess = g;
+	const userText = `You: ${userGuess}`;
+	$.appendixGuess
+		.selectAll('.guess')
+		.filter(d => d.id === 'you')
+		.select('text')
+		.text(userText);
 }
 
 function setupGuess(data) {
@@ -181,7 +187,7 @@ function setupGuess(data) {
 	const userText = `You: ${userGuess}`;
 
 	clean.push({ key: avg, value: 0, special: avgText });
-	clean.push({ key: userGuess, value: 1, special: userText });
+	clean.push({ key: userGuess, value: 0, special: userText, id: 'you' });
 
 	const $svg = $.appendixGuess.append('svg');
 	const $g = $svg.append('g');
@@ -196,12 +202,12 @@ function setupGuess(data) {
 	$axis.append('line').at({ x1: 0, y1: 0, x2: 0, y2: 0 });
 	$axis
 		.append('text.start')
-		.at({ x: 0, y: FONT_SIZE * 1.5 })
+		.at({ x: 0, y: FONT_SIZE * 1.75 })
 		.text(min)
 		.at('text-anchor', 'start');
 	$axis
 		.append('text.end')
-		.at({ x: 0, y: FONT_SIZE * 1.5 })
+		.at({ x: 0, y: FONT_SIZE * 1.75 })
 		.text(max)
 		.at('text-anchor', 'end');
 	const $enter = $g

@@ -55,6 +55,8 @@
 			stroke $gray-light
 			stroke-width 2px
 			stroke-dasharray 4px 4px
+		text
+			font-weight 400
 
 
 .appendix__distribution
@@ -71,7 +73,7 @@
 				stroke $gray-light
 			text
 				fill $gray
-				font-weight 500
+				font-weight 400
 		path
 			display none
 	.axis--x
@@ -79,7 +81,7 @@
 			fill $gray
 			set-type-size(xx-small, false)
 			text-transform uppercase
-			font-weight 500
+			font-weight 400
 		.month:nth-child(even)
 			opacity 0
 			+mq('bp-3')
@@ -110,11 +112,13 @@
 				stroke $gray-light
 			text
 				fill $gray
-				font-weight 500
+				font-weight 400
 		path
 			display none
 	.axis--x
 		.tick
+			text
+				font-weight 400
 			&:nth-child(3)
 				display none
 		line, path
