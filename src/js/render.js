@@ -27,8 +27,10 @@ let skinFrame = 0;
 let width = 0;
 const $label = null;
 
-let playerW = 32;
-let playerH = 70;
+const rawW = 32;
+const rawH = 70;
+let playerW = rawW;
+let playerH = rawH;
 
 const special = [];
 
@@ -40,10 +42,10 @@ function renderPlayer({ srcX, srcY, posX, posY, alpha, skin }) {
 	info.context.globalAlpha = alpha;
 	info.context.drawImage(
 		info.bufferCanvas[skin],
-		srcX * playerW * 2,
-		srcY * playerH * 2,
-		playerW * 2,
-		playerH * 2,
+		srcX * rawW * 2,
+		srcY * rawH * 2,
+		rawW * 2,
+		rawH * 2,
 		Math.floor(posX - playerW / 2),
 		posY,
 		playerW,
