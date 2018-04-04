@@ -35,7 +35,7 @@ let mobile = false;
 let playerW = 32;
 let playerH = 70;
 let russellIndex = 319;
-let currentStep = 'appendix';
+let currentStep = 'intro';
 
 function updateGuessStep() {
 	const $s = getStepTextEl();
