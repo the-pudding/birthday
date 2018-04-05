@@ -1,21 +1,35 @@
 header
-	z-index set-index('overlay')
 	position absolute
 	top 0
 	left 0
 	width 100%
-	opacity 0
 	transition opacity 500ms ease-in-out
+	z-index 0
+	+mq('bp-desktop')
+		z-index set-index('overlay')
+	&:before
+		display block
+		position absolute
+		content ''
+		width 100%
+		height 4rem
+		background linear-gradient(#9bcffa, $blue-light);
+		z-index 0
+		+mq('bp-desktop')
+			display none
+			z-index 0
 	&.is-visible
 		opacity 1
 
 	a.logo
 		display block
 		border none
-		max-width 9rem
-		margin 0.125rem auto
-		+mq('bp-3')
-			margin 1rem auto
+		max-width 7rem
+		margin 0 auto
+		position relative
+		+mq('bp-desktop')
+			max-width 9rem
+			margin 0.25rem auto
 
 		svg
 			fill $off-black
