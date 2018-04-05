@@ -51,19 +51,29 @@
 	.note
 		display none
 		position absolute
-		bottom 1rem
+		top 2em
 		left 0
 		width 19rem
-		background-color $gray-dark
+		background-color rgba($red, 0.95)
 		box-shadow 0 0 6px 0 rgba($primary, 0.5)
 		border-radius 2px
 		padding 0.5rem
+		padding-right 1.25rem
 		color $off-white
 		text-align left
 		set-type-size('small', true)
 		font-weight 500
 		z-index set-index('overlay')
 		cursor pointer
+		transform translateX(-50%)
+		text-shadow 0 0 1px $off-black
+		&:after
+			content 'x'
+			display block
+			position absolute
+			top 0em
+			right 0.5em
+			cursor pointer
 		&.is-visible
 			display block
 	

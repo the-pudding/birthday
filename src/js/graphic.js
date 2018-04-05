@@ -36,7 +36,7 @@ let mobile = false;
 let playerW = 32;
 let playerH = 70;
 let russellIndex = 319;
-let currentStep = 'conclusion';
+let currentStep = 'intro';
 
 let timeout = null;
 
@@ -512,6 +512,15 @@ function handleSupClick() {
 	const $sup = d3.select(this);
 	const $note = $sup.select('.note');
 	const visible = $note.classed('is-visible');
+	const { left } = $sup.node().getBoundingClientRect();
+	const w = 304 / 2;
+	const xL = w + left;
+	const xR = left - w;
+	let over = 0;
+	if (xL > width) {
+		over = (xL - width + REM) * -1;
+	} else if (xR < 0) over = (xR - REM) * -1;
+	$note.st('left', over);
 	$note.classed('is-visible', !visible);
 	tracker.send({ category: 'note', action: 'click', once: true });
 }
@@ -698,9 +707,9 @@ function setupUser() {
 }
 
 function begin() {
-	// const $btn = getStepButtonEl();
-	// $btn.filter((d, i) => i === 0).text('Let’s do this!');
-	// delayedButton(0);
+	const $btn = getStepButtonEl();
+	$btn.filter((d, i) => i === 0).text('Let’s do this!');
+	delayedButton(0);
 }
 
 function init() {

@@ -64,7 +64,7 @@ function clear() {
 }
 
 function setup() {
-	if (window.location.host.includes('localhost')) clear();
+	// if (window.location.host.includes('localhost')) clear();
 	userData = setupUserData();
 	if (!exists()) connect();
 }
