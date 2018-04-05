@@ -12,8 +12,10 @@
 		box-shadow 0 2px 4px rgba($off-black, 0.33)
 		border-radius 2rem
 		color #fff
-		set-type-size(small)
+		set-type-size(x-small, false)
 		text-align center
+		+mq('bp-desktop')
+			set-type-size(small, false)
 	
 	.support
 		display flex
@@ -28,7 +30,9 @@
 			margin-bottom 1rem
 		p
 			margin-bottom 1rem
-			set-type-size(root)
+			set-type-size(small)
+			+mq('bp-desktop')
+				set-type-size(root)
 	
 	.newsletter__input
 		font-family $sans

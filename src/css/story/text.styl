@@ -4,25 +4,32 @@
 .text__step
 	position absolute
 	width 100%
-	top 50%
+	top 0
+	transform translate(100%, 0)
 	left 0
-	transform translate(100%, -50%)
 	opacity 0
 	margin 0
-	margin-top 1rem
+	margin-top 0.5rem
 	transition opacity 250ms ease-in-out, transform 500ms ease-out
 	font-weight 400
 	pointer-events none
+	+mq('bp-desktop')
+		top 50%
+		transform translate(100%, -50%)
 	&.center
 		text-align center
 	&.is-visible
 		opacity 1
 		pointer-events auto
-		transform translate(0, -50%)
+		transform translate(0, 0)
+		+mq('bp-desktop')
+			transform translate(0, -50%)
 		&.no-enter
 			transition none
 	&.is-exit
-		transform translate(-100%, -50%)
+		transform translate(-100%, 0)
+		+mq('bp-desktop')
+			transform translate(0, -50%)
 		&.no-exit
 			transition none
 	
@@ -31,6 +38,9 @@
 		max-width 50rem
 		margin 0 auto
 		line-height 1.5
+		set-type-size(small, false)
+		+mq('bp-1')
+			set-type-size(root, false)
 		+mq('bp-desktop')
 			set-type-size(large, false)
 

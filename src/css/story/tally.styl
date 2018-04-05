@@ -46,6 +46,9 @@
 	.g-dots circle
 		stroke none
 		fill $gray-dark
+		opacity 0
+		+mq('bp-desktop')
+			opacity 1
 	
 	.success, .failure
 		set-type-size(root, false)

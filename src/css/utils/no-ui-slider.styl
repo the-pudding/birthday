@@ -326,6 +326,9 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 			set-type-size(small, false)
 			font-weight 600
 			padding 0
+			transform translate(-50%, 25%)
+			+mq('bp-desktop')
+				transform translate(-50%, 0)
 	
 	&[disabled]
 		&.noUi-horizontal

@@ -37,8 +37,10 @@ main
 					height 100%
 					z-index 100
 					pointer-events none
-					right -98%
+					right -100%
 					background linear-gradient(to right, rgba($bg,0) 0%,rgba($bg,1) 4%,rgba($bg,1) 100%)
+					+mq('bp-desktop')
+						right -98%
 			&:before
 					position absolute
 					bottom 1rem
@@ -48,18 +50,24 @@ main
 					height 100%
 					z-index 100
 					pointer-events none
-					left -98%
+					left -100%
 					background linear-gradient(to left, rgba($bg,0) 0%,rgba($bg,1) 4%,rgba($bg,1) 100%)
+					+mq('bp-desktop')
+						left -98%
 			
 	&__ui
 		// background blue //debug
 		width 100%
-		height 67%
+		height 80%
 		max-width 40rem
 		margin 0 auto
 		transition height 500ms ease-in-out
+		+mq('bp-desktop')
+			height 67%
 		&.is-short
-			height 30%
+			height 35%
+			+mq('bp-desktop')
+				height 30%
 	
 .chart
 	&__canvas
@@ -143,10 +151,15 @@ main
 			position absolute
 			top 100%
 			left 50%
-			height 0.75rem
-			width 2px
-			transform translateX(-2px)
+			height 0.25rem
+			width 1px
+			transform translateX(-1px)
 			background-color $gray-light
+			+mq('bp-desktop')
+				height 0.75rem
+				width 2px
+				transform translateX(-2px)
+			
 
 .chart__balloon
 	p
@@ -179,3 +192,8 @@ main
 
 svg text
 	font-family $sans
+
+.desktop
+	display none
+	+mq('bp-desktop')
+		display block

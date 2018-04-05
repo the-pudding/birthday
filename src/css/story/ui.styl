@@ -21,8 +21,8 @@
 		position absolute
 		bottom 2rem
 		left 50%
-		width 17rem
-		padding 0.5rem 0
+		width 15rem
+		padding 0.35rem 0
 		transform translateX(-50%)
 		background-color white
 		font-weight 600
@@ -34,6 +34,11 @@
 		box-shadow 0 2px 4px rgba($off-black, 0.33)
 		border-radius 2rem
 		color $off-black
+		set-type-size(x-small, false)
+		+mq('bp-desktop')
+			set-type-size(small, false)
+			padding 0.5rem 0
+			width 17rem
 		&.is-jiggle
 			animation jiggle 5s ease-in-out infinite
 		&.is-hidden
@@ -82,9 +87,11 @@
 
 	.dropdown
 		position relative
-		top 12.5%
+		top 7.5%
 		margin 0 auto
 		text-align center
+		+mq('bp-desktop')
+			top 12.5%
 		select
 			background-color transparent
 			border none
@@ -98,7 +105,9 @@
 				cursor not-allowed
 				border-color currentColor
 	.slider
-		top 12.5%
+		top 7.5%
+		+mq('bp-desktop')
+			top 12.5%
 
 @keyframes jiggle
 	0%

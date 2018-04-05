@@ -236,7 +236,7 @@ function showBigTwo() {
 }
 
 function addRecentPlayer(
-	{ player, speed = 1, balloon = false, hideLabel = false, alpha = 0.5, skin },
+	{ player, speed = 1, balloon = false, hideLabel = false, alpha = 0.67, skin },
 	cb = null
 ) {
 	const showLabel = hideLabel ? false : speed < 4;
