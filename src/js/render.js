@@ -83,7 +83,8 @@ function createBalloon(p) {
 }
 
 function updateLabel(p, exact) {
-	const index = exact ? p.destDay : Math.floor(scale.invert(p.x));
+	const i = Math.floor(scale.invert(p.x));
+	const index = exact ? p.destDay : Math.min(Math.max(i, 0), dayData.length);
 	const { month, day } = dayData[index];
 	p.labelEl.select('.date').text(`${month.substring(0, 3)} ${day}`);
 }
@@ -168,7 +169,7 @@ function highlight() {
 
 function showBirthday(id) {
 	const p = players.find(d => d.id === id);
-	p.labelEl.select('.date').classed('is-visible', true);
+	if (p) p.labelEl.select('.date').classed('is-visible', true);
 }
 
 function hideSpecialLabels() {
