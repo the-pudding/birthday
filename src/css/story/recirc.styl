@@ -1,0 +1,35 @@
+.text__step.text__step--recirc
+	transform translate(100%, 0)
+	top 0
+	&.is-visible
+		transform translate(0, 0)
+		top 0
+
+	.pudding-footer
+		background-color transparent
+		padding-top 0
+		.footer-recirc
+			padding-top 1rem
+			+mq('bp-desktop')
+				padding-top 3rem
+			&__hed
+				margin-bottom 0.5rem
+				display none
+				+mq('bp-desktop')
+					display block
+			&__articles
+				:nth-child(n+3)
+					display none
+					+mq('bp-desktop')
+						display block
+			.article__headline
+				margin-top 0.25em
+		.footer-company
+			background-color transparent
+			color $off-black
+			display none
+			+mq('bp-desktop')
+				display block
+			&__trademark p
+				display none
+		

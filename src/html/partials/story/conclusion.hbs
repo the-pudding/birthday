@@ -2,12 +2,12 @@
 	<p>{{{text}}}</p>
 	<div class='support'>
 		<div class='support__patreon support__item'>
-			<p>Help us create more stories like this 💵</p>
+			<p>{{{@root.copy.patreon}}}</p>
 			<a onclick="trackOutboundLink('https://www.patreon.com/thepudding'); return false;" target="_blank" href="https://www.patreon.com/thepudding"
 			 class="btn small">Donate on Patreon</a>
 		</div>
 		<div class="support__subscribe support__item">
-			<p class="subscribe__overline tk-atlas">Get The Pudding in your inbox ✉️</p>
+			<p class="subscribe__overline tk-atlas">{{{@root.copy.email}}}</p>
 			<div class="subscribe__newsletter">
 				<form action="https://poly-graph.us11.list-manage.com/subscribe/post" method="POST">
 					<input type="hidden" name="u" value="c70d3c0e372cde433143ffeab">

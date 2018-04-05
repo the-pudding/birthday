@@ -36,7 +36,7 @@ let mobile = false;
 let playerW = 32;
 let playerH = 70;
 let russellIndex = 319;
-let currentStep = 'intro';
+let currentStep = 'conclusion';
 
 let timeout = null;
 
@@ -338,7 +338,7 @@ const steps = {
 	conclusion: () => {
 		delayedButton();
 	},
-	pudding: () => {},
+	recirc: () => {},
 	appendix: () => {}
 };
 
@@ -386,7 +386,7 @@ function updateStep() {
 		timeout.stop();
 		timeout = null;
 	}
-	const noChart = ['intro', 'conclusion', 'appendix', 'pudding'];
+	const noChart = ['intro', 'conclusion', 'appendix', 'recirc'];
 	const $s = getStepEl();
 	const id = $s.at('data-id');
 	tracker.send({ category: 'slide', action: id, once: true });
@@ -698,9 +698,9 @@ function setupUser() {
 }
 
 function begin() {
-	const $btn = getStepButtonEl();
-	$btn.filter((d, i) => i === 0).text('Let’s do this!');
-	delayedButton(0);
+	// const $btn = getStepButtonEl();
+	// $btn.filter((d, i) => i === 0).text('Let’s do this!');
+	// delayedButton(0);
 }
 
 function init() {
