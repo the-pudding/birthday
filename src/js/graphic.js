@@ -694,7 +694,7 @@ function setupUser() {
 
 function begin() {
 	const $btn = getStepButtonEl();
-	$btn.filter((d, i) => i === 0).text('Begin');
+	$btn.filter((d, i) => i === 0).text('Let’s do this!');
 	delayedButton(0);
 }
 

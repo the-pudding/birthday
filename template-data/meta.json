@@ -2,14 +2,15 @@
 	"title": "The Birthday Paradox Experiment",
 	"description": "The most fun Birthday Paradox explainer ever.",
 	"url": "https://pudding.cool/2018/04/birthday-paradox/",
-	"keywords": "tk",
+	"keywords":
+		"birthday paradox, birthday problem, 23, explorable explanation, explainer, data, interactive",
 	"imgFacebook":
 		"https://pudding.cool/2018/04/birthday-paradox/assets/social/social-facebook.jpg",
 	"imgTwitter":
 		"https://pudding.cool/2018/04/birthday-paradox/assets/social/social-twitter.jpg",
 	"author": {
 		"name": "Russell Goldenberg",
-		"url": "https://twitter.com/codenberg",
+		"url": "https://pudding.cool/author/russell-goldenberg/",
 		"twitterHandle": "@codenberg"
 	}
 }
