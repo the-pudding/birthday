@@ -1,5 +1,6 @@
 // D3 is included by globally by default
 import * as noUiSlider from 'nouislider';
+import tracker from './utils/tracker';
 import db from './db';
 import tally from './tally';
 import math from './math';
@@ -388,6 +389,7 @@ function updateStep() {
 	const noChart = ['intro', 'conclusion', 'appendix', 'pudding'];
 	const $s = getStepEl();
 	const id = $s.at('data-id');
+	tracker.send({ category: 'slide', action: id, once: true });
 	$.graphicChart.classed('is-visible', !noChart.includes(id));
 	$.header.classed('is-visible', id !== 'intro');
 	$.svgTally.classed('is-visible', false);
@@ -511,6 +513,7 @@ function handleSupClick() {
 	const $note = $sup.select('.note');
 	const visible = $note.classed('is-visible');
 	$note.classed('is-visible', !visible);
+	tracker.send({ category: 'note', action: 'click', once: true });
 }
 
 function handleNoteClick() {
@@ -520,6 +523,7 @@ function handleNoteClick() {
 
 function handleAboutBtnClick() {
 	$.about.classed('is-visible', true);
+	tracker.send({ category: 'about', action: 'click', once: true });
 }
 
 function handleAboutCloseClick() {
@@ -535,6 +539,7 @@ function handleButtonClickPrev() {
 		d3.select(`.text__step--${prev}`).classed('is-exit', false);
 	} else currentStep = prev;
 	updateStep();
+	tracker.send({ category: 'prev', action: 'click', once: true });
 }
 
 function handleButtonClickNext() {
