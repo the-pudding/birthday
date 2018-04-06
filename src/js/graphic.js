@@ -542,7 +542,7 @@ function handleButtonClickPrev() {
 	const cur = storedSteps.pop();
 	const prev = storedSteps.pop();
 	// special case for double jump
-	if (['result', 'all'].includes(cur)) {
+	if (['result', 'all', 'mathRun', 'conclusion'].includes(cur)) {
 		currentStep = storedSteps.pop();
 		d3.select(`.text__step--${prev}`).classed('is-exit', false);
 	} else currentStep = prev;
