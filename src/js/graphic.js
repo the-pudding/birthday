@@ -158,7 +158,7 @@ const steps = {
 		let group = 0;
 		const times = 19;
 		let i = 0;
-		let speed = 2;
+		let speed = 4;
 		let dict = [];
 		let matched = false;
 
@@ -199,13 +199,12 @@ const steps = {
 					i = 0;
 					matched = false;
 					if (group === 1) {
-						speed = 4;
+						speed = 8;
 						$text.select('.speed--1').classed('is-visible', true);
 					} else if (group === 2) {
-						speed = 8;
+						speed = 16;
 						$text.select('.speed--2').classed('is-visible', true);
-					} else if (group === 3) speed = 16;
-					else if (group === 4) {
+					} else if (group === 3) {
 						speed = 32;
 						$text.select('.speed--3').classed('is-visible', true);
 					}
