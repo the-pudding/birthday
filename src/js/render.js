@@ -73,13 +73,14 @@ function createBalloon(p) {
 	p.rainbow = true;
 	p.alpha = 1;
 	const left = scale(p.destDay);
-
-	$.chartBalloon
-		.append('p.balloon')
-		.text('🎈')
-		.st({ left })
-		.classed('is-float', true)
-		.on(animationEvent, removeBalloon);
+	if (p.speed < 64) {
+		$.chartBalloon
+			.append('p.balloon')
+			.text('🎈')
+			.st({ left })
+			.classed('is-float', true)
+			.on(animationEvent, removeBalloon);
+	}
 }
 
 function updateLabel(p, exact) {

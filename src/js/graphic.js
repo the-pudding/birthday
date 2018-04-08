@@ -92,6 +92,7 @@ const steps = {
 	},
 	believe: () => {
 		tally.clear(0);
+		tally.setTrials();
 		// release 1 every X seconds
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
@@ -146,6 +147,8 @@ const steps = {
 	},
 	more: () => {
 		tally.clear(1);
+		tally.setTrials();
+
 		$.svgTally.classed('is-visible', true);
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
@@ -202,10 +205,10 @@ const steps = {
 						speed = 8;
 						$text.select('.speed--1').classed('is-visible', true);
 					} else if (group === 2) {
-						speed = 16;
+						speed = 24;
 						$text.select('.speed--2').classed('is-visible', true);
 					} else if (group === 3) {
-						speed = 32;
+						speed = 48;
 						$text.select('.speed--3').classed('is-visible', true);
 					}
 					timeout = d3.timeout(() => {
@@ -224,16 +227,19 @@ const steps = {
 		const $btn = getStepButtonEl();
 		$btn.classed('is-hidden', true);
 
+		const $text = getStepTextEl();
+
 		const speed = 64;
 		const pre = rawData.tally.map(d => d);
 
 		// add post tally data too
 		const binnedT = rawData.binnedTally.find(d => d.key === 'true') || {
-			value: 0
+			value: 500
 		};
 		const binnedF = rawData.binnedTally.find(d => d.key === 'false') || {
-			value: 0
+			value: 480
 		};
+
 		const arrT = d3.range(binnedT.value).map(() => true);
 		const arrF = d3.range(binnedF.value).map(() => false);
 		const joined = arrT.concat(arrF);
@@ -241,35 +247,46 @@ const steps = {
 		const tallyData = pre.concat(post);
 
 		const total = tallyData.length;
-		const rate = Math.max(Math.min(SECOND * 8 / total, 200), 16);
+
+		if (total + 20 >= 1000) $text.select('.sample').html('run 1,000 trials &mdash; the last 23,000 people to visit.')
+		const rate = Math.max(SECOND * 5 / total, 10);
+
+		let done = false;
 
 		const release = () => {
 			render.removePlayers();
-			const matched = tallyData.pop();
-
-			// const cb = i === 20 ? next : null;
 			const players = d3
 				.range(JORDAN)
 				.map(d => ({ ago: d, day: Math.floor(Math.random() * 366) }));
+			
 			players.forEach((player, i) => {
-				const balloon = i === 0 && matched;
+				const balloon = false;
 				const skin = (i + 2) % 5;
 				render.addRecentPlayer({ player, speed, balloon, skin });
 			});
-			tally.update(matched);
-			if (tallyData.length) timeout = d3.timeout(release, rate);
-			else {
+	
+			if (!done) d3.timeout(release, rate);
+		};
+
+		const batch = () => {
+			render.removePlayers();
+			tally.updateBatch(tallyData);
+			timeout = d3.timeout(() => {
+				done = true;
 				$btn.classed('is-hidden', false);
 				delayedButton(0);
-			}
+			}, SECOND * 5);
 		};
+
 		if (tally.isComplete()) {
 			render.removePlayers();
 			$btn.classed('is-hidden', false);
 			delayedButton(0);
 		} else {
 			timeout = d3.timeout(() => {
+				tally.setTrials(total);
 				render.removePlayers();
+				batch();
 				release();
 			}, SECOND * 5);
 		}
@@ -725,11 +742,11 @@ function init() {
 
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];
+		// console.log(rawData);
 		db.setup();
 		render.setup(begin);
 		setupUser();
-		const trials = Math.floor((rawData.count + 2) / JORDAN);
-		tally.setup(trials);
+		tally.setup();
 		math.setup();
 		appendix.setup(rawData);
 		resize();

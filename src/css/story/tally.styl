@@ -22,8 +22,8 @@
 				display none
 			text
 				fill $gray
-			&:nth-child(3)
-				display none
+			// &:nth-child(3)
+			// 	display none
 		path
 			display none
 	.axis--y
@@ -37,11 +37,12 @@
 		path
 			display none
 	
-	.g-line
+	.g-line, .g-line2
 		fill none
 		stroke $gray-dark
 		stroke-width 2px
 		stroke-linecap round
+	
 
 	.g-dots circle
 		stroke none
@@ -51,7 +52,7 @@
 			opacity 1
 	
 	.success, .failure
-		set-type-size(root, false)
+		set-type-size(x-small, false)
 		text-transform uppercase
 		&.bg
 			stroke $bg
@@ -61,4 +62,4 @@
 			font-weight 500
 		.count
 			font-weight 600
-			fill $gray-dark
+			fill $red
