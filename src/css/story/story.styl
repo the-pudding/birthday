@@ -24,9 +24,11 @@ main
 		// background green //debug
 		pointer-events none
 		position relative
-		height 16rem
+		height 14rem
 		max-width 70rem
 		margin 0 auto
+		+mq('bp-600')
+			height 16rem
 		.chart__timeline, .chart__canvas, .chart__svg
 			transition opacity 500ms ease-in-out
 			opacity 0
@@ -65,16 +67,13 @@ main
 		width 100%
 		max-width 40rem
 		margin 0 auto
-		height 8rem
+		height 9rem
 		transition height 500ms ease-in-out
 		+mq('bp-desktop')
 			+mq('bp-h')
 				height 10rem
 		&.is-short
-			height 3rem
-			+mq('bp-desktop')
-				+mq('bp-h')
-					height 5rem
+			height 5rem
 	
 .chart
 	&__canvas
@@ -204,6 +203,11 @@ svg text
 	display none
 	+mq('bp-desktop')
 		display block
+
+span.desktop
+	display none
+	+mq('bp-h')
+		display inline
 
 .emoji
 	padding 0 0.25em 
