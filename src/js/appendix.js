@@ -286,12 +286,12 @@ function setupDistribution(data) {
 	$even
 		.append('text.bg')
 		.text('Expected')
-		.at('y', FONT_SIZE)
+		.at('y', FONT_SIZE * 1.25)
 		.at('text-anchor', 'end');
 	$even
 		.append('text.fg')
 		.text('Expected')
-		.at('y', FONT_SIZE)
+		.at('y', FONT_SIZE * 1.25)
 		.at('text-anchor', 'end');
 
 	$even.append('line').at({

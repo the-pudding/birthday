@@ -30,7 +30,7 @@ function formatInt(num) {
 }
 
 function isComplete() {
-	return rawData.length > 20;
+	return rawData2.length;
 }
 
 function updateChart(duration = 0) {
@@ -56,7 +56,7 @@ function updateChart(duration = 0) {
 		return (total + total2) / (i + data.length);
 	});
 
-	const totalCount = total + total2;
+	// const totalCount = total + total2;
 
 	const $path2 = $.gTally
 		.select('.g-line2 path')
@@ -142,6 +142,7 @@ function updateBatch(matches) {
 
 function clear(start) {
 	rawData = rawData.slice(0, start);
+	rawData2 = [];
 	updateChart();
 }
 
@@ -203,7 +204,7 @@ function setTrials(count = 20) {
 	numTrials = count;
 	scale.x.domain([1, count]);
 	updateAxis();
-	updateChart(SECOND);
+	if (rawData.length) updateChart(rawData.length > 1 ? SECOND : 0);
 }
 
 function createText(className) {

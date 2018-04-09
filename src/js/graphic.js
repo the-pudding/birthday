@@ -21,6 +21,7 @@ const DPR = Math.min(window.devicePixelRatio, 2);
 const SECOND = 1000;
 const REM = 16;
 const JORDAN = 23;
+const MAX_TALLY = 980;
 
 const storedSteps = [];
 const dayData = flattenMonthData();
@@ -234,21 +235,24 @@ const steps = {
 
 		// add post tally data too
 		const binnedT = rawData.binnedTally.find(d => d.key === 'true') || {
-			value: 500
+			value: 0
 		};
 		const binnedF = rawData.binnedTally.find(d => d.key === 'false') || {
-			value: 480
+			value: 0
 		};
 
 		const arrT = d3.range(binnedT.value).map(() => true);
 		const arrF = d3.range(binnedF.value).map(() => false);
 		const joined = arrT.concat(arrF);
 		const post = joined.length ? shuffle(joined) : [];
-		const tallyData = pre.concat(post);
+		const tallyData = pre.concat(post).slice(0, MAX_TALLY);
 
 		const total = tallyData.length;
 
-		if (total + 20 >= 1000) $text.select('.sample').html('run 1,000 trials &mdash; the last 23,000 people to visit.')
+		if (total >= MAX_TALLY)
+			$text
+				.select('.sample')
+				.html('run 1,000 trials &mdash; the last 23,000 people to visit.');
 		const rate = Math.max(SECOND * 5 / total, 10);
 
 		let done = false;
@@ -258,13 +262,13 @@ const steps = {
 			const players = d3
 				.range(JORDAN)
 				.map(d => ({ ago: d, day: Math.floor(Math.random() * 366) }));
-			
+
 			players.forEach((player, i) => {
 				const balloon = false;
 				const skin = (i + 2) % 5;
 				render.addRecentPlayer({ player, speed, balloon, skin });
 			});
-	
+
 			if (!done) d3.timeout(release, rate);
 		};
 
@@ -284,11 +288,13 @@ const steps = {
 			delayedButton(0);
 		} else {
 			timeout = d3.timeout(() => {
-				tally.setTrials(total);
+				tally.setTrials(total + 20);
 				render.removePlayers();
-				batch();
-				release();
-			}, SECOND * 5);
+				timeout = d3.timeout(() => {
+					batch();
+					release();
+				}, SECOND * 1);
+			}, SECOND * 6);
 		}
 	},
 	math: () => {
@@ -359,7 +365,7 @@ const steps = {
 };
 
 function rainBalloons() {
-	render.createBalloon({ destDay: Math.floor(Math.random() * 366) });
+	render.createBalloon({ destDay: Math.floor(Math.random() * 366), speed: 0 });
 	if (currentStep === 'intro') timeout = d3.timeout(rainBalloons, 200);
 }
 function delayedButton(delay = SECOND * 2) {
@@ -742,7 +748,7 @@ function init() {
 
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];
-		// console.log(rawData);
+		console.log(`last updated: ${rawData.updated}`)
 		db.setup();
 		render.setup(begin);
 		setupUser();
@@ -750,6 +756,7 @@ function init() {
 		math.setup();
 		appendix.setup(rawData);
 		resize();
+		// updateStep();
 	});
 }
 
