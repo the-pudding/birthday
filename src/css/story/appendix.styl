@@ -61,9 +61,11 @@
 
 .appendix__distribution
 	rect
-		stroke $bg
-		stroke-width 0.5px
+		stroke $gray-dark
 		fill $gray-dark
+		+mq('bp-600')
+			stroke $bg
+			stroke-width 0.5px
 	.axis--y
 		.tick
 			// &:nth-child(2)

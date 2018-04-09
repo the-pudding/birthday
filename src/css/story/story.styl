@@ -58,16 +58,18 @@ main
 	&__ui
 		// background blue //debug
 		width 100%
-		height 80%
+		height 100%
 		max-width 40rem
 		margin 0 auto
 		transition height 500ms ease-in-out
 		+mq('bp-desktop')
-			height 80%
+			+mq('bp-h')
+				height 80%
 		&.is-short
-			height 35%
+			height 40%
 			+mq('bp-desktop')
-				height 30%
+				+mq('bp-h')
+					height 30%
 	
 .chart
 	&__canvas

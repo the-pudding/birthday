@@ -43,7 +43,8 @@
 			set-type-size(root, false)
 		+mq('bp-desktop')
 			max-width 50rem
-			set-type-size(large, false)
+			+mq('bp-h')
+				set-type-size(large, false)
 
 	.spacer
 		display block
