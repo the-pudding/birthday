@@ -1,5 +1,6 @@
 import $ from './dom';
 import monthData from './month-data';
+import flattenMonthData from './flatten-month-data';
 import calculateOdds from './calculate-odds';
 
 const REM = 16;
@@ -12,6 +13,9 @@ const FONT_SIZE = 12;
 let width = 0;
 let userGuess = 0;
 let evenDist = 0;
+let dayData = null;
+
+const mobile = d3.select('body').classed('is-mobile');
 
 const scale = {
 	guess: {
@@ -95,6 +99,8 @@ function resizeDistribution() {
 	$even.at('transform', `translate(0,${y})`);
 	$even.selectAll('text').at('x', w - FONT_SIZE * 0.25);
 	$even.select('line').at('x2', w);
+
+	$svg.select('.interaction').at({ width: w, height: h });
 }
 
 function resizeProbability() {
@@ -146,17 +152,77 @@ function resizeProbability() {
 		.datum(data)
 		.at('d', line);
 
+	$svg.select('.interaction').at({ width: w, height: h });
+
 	const offX = scale.probability.x(23);
 	const $jordan = $svg.select('.g-jordan');
 	$jordan.at('transform', `translate(${offX}, 0)`);
+	$jordan.selectAll('text').text('23 people = 50.7%');
+
 	$jordan
 		.selectAll('text')
-		.at('y', h * 0.85)
-		.at('x', FONT_SIZE * 0.5);
+		.at('y', h / 2 + FONT_SIZE / 3)
+		.at('x', FONT_SIZE / 2);
 	$jordan.select('line').at({
 		y1: 0,
 		y2: h
 	});
+}
+
+function handleProbabilityMousemove() {
+	const $svg = $.appendixProbability.select('svg');
+
+	const [x] = d3.mouse(this);
+
+	const posX = x;
+	const index = Math.floor(scale.probability.x.invert(x));
+	let p = d3.format('.1%')(calculateOdds(index));
+	p = p.includes('100') ? '> 99.9%' : p;
+
+	const text = `${index} people = ${p}`;
+
+	const align = index < 50 ? 'start' : 'end';
+	const dx = index < 50 ? 1 : -1;
+	const offX = scale.probability.x(index);
+	const $jordan = $svg.select('.g-jordan');
+	$jordan.at('transform', `translate(${offX}, 0)`);
+	$jordan
+		.selectAll('text')
+		.at('text-anchor', align)
+		.at('x', FONT_SIZE * 0.5 * dx)
+		.text(text);
+}
+
+function handleDistributionMousemove() {
+	const $svg = $.appendixDistribution.select('svg');
+
+	const [x] = d3.mouse(this);
+	const posX = x;
+	const posY = 0;
+
+	const w = scale.distribution.x.bandwidth();
+	const index = Math.max(0, Math.floor(x / w));
+	const { value } = $svg
+		.selectAll('.day')
+		.filter((d, i) => i === index)
+		.datum();
+
+	const { month, day } = dayData[index];
+	const text = `${month.substring(0, 3)} ${day}: `;
+
+	const $tip = $svg.select('.g-tooltip');
+	let align = 'middle';
+	if (posX < 150) align = 'start';
+	else if (width - posX < 150) align = 'end';
+	$tip.selectAll('text').at('text-anchor', align);
+	$tip.selectAll('.month').text(text);
+	$tip.selectAll('.count').text(`${value} people`);
+	$tip.classed('is-visible', true);
+	$tip.at('transform', `translate(${posX}, ${posY})`);
+}
+
+function handleDistributionMouseout() {
+	$.appendixDistribution.select('.g-tooltip').classed('is-visible', false);
 }
 
 function resize() {
@@ -185,11 +251,35 @@ function updateGuess(g) {
 	$guess.select('text').text(userText);
 }
 
+function getAverageGuess(data) {
+	// const sum = d3.sum(clean, d => d.key * d.value);
+	// const avg = Math.round(sum / count);
+	// const all = [];
+	// data.forEach(d => {
+	// 	d3.range(d.value).forEach(() => all.push(d.key));
+	// });
+	const count = d3.sum(data, d => d.value);
+	const target = Math.floor(count / 2);
+	let i = 0;
+	let inc = 0;
+	let found = false;
+	while (!found) {
+		const cur = data[i];
+		inc += cur.value;
+		i += 1;
+		if (inc > target) {
+			found = true;
+			return cur.key;
+		}
+	}
+	return 180;
+}
+
 function setupGuess(data) {
-	const clean = data.map(d => ({ ...d, key: +d.key }));
-	const count = d3.sum(clean, d => d.value);
-	const sum = d3.sum(clean, d => +d.key * d.value);
-	const avg = Math.round(sum / count);
+	const clean = data
+		.map(d => ({ ...d, key: +d.key }))
+		.sort((a, b) => d3.ascending(a.key, b.key));
+	const avg = getAverageGuess(clean);
 	const maxGuessCount = d3.max(clean, d => d.value);
 
 	const avgText = `Avg: ${avg}`;
@@ -300,6 +390,22 @@ function setupDistribution(data) {
 		y1: 0,
 		y2: 0
 	});
+
+	if (!mobile) {
+		$g
+			.append('rect.interaction')
+			.at({ x: 0, y: 0 })
+			.on('mousemove', handleDistributionMousemove)
+			.on('mouseout', handleDistributionMouseout);
+
+		const $tip = $g.append('g.g-tooltip');
+		const $bg = $tip.append('text.bg').at('y', FONT_SIZE * 0.5);
+		$bg.append('tspan.month');
+		$bg.append('tspan.count');
+		const $fg = $tip.append('text.fg').at('y', FONT_SIZE * 0.5);
+		$fg.append('tspan.month');
+		$fg.append('tspan.count');
+	}
 }
 
 function setupProbability() {
@@ -322,17 +428,25 @@ function setupProbability() {
 	scale.probability.x.domain([0, 100]);
 
 	const $jordan = $g.append('g.g-jordan');
-	$jordan.append('text.bg').text('23 people = 50.7%');
-	$jordan.append('text.fg').text('23 people = 50.7%');
+	$jordan.append('text.bg');
+	$jordan.append('text.fg');
 	$jordan.append('line').at({
 		x1: 0,
 		y1: 0,
 		x2: 0,
 		y2: 0
 	});
+
+	if (!mobile) {
+		$g
+			.append('rect.interaction')
+			.at({ x: 0, y: 0 })
+			.on('mousemove', handleProbabilityMousemove);
+	}
 }
 
 function setup(rawData) {
+	dayData = flattenMonthData();
 	evenDist = rawData.count / 366;
 	$.appendix.select('.count').text(d3.format(',')(rawData.count));
 	setupGuess(rawData.binnedGuess);
