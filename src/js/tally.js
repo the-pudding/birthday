@@ -50,12 +50,14 @@ function updateChart(duration = 0) {
 		.ease(EASE)
 		.at('d', line);
 
-	let total2 = total;
+	let total2 = 0;
+	const preTotal = total - (rawData[rawData.length - 1] ? 1 : 0);
+	const preLen = data.length;
 	const data2 = rawData2.map((d, i) => {
 		total2 += d ? 1 : 0;
-		total -= rawData[rawData.length - 1] ? 1 : 0; // substract duplicate
-
-		return total2 / (i + data.length);
+		const num = total2 + preTotal;
+		const den = i + preLen;
+		return num / den;
 	});
 
 	// const totalCount = total + total2;
