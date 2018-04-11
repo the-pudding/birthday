@@ -16,7 +16,6 @@ import loadImage from './utils/load-image';
 const BP = 600;
 const VERSION = new Date().getTime();
 const DATA_URL = `https://pudding.cool/2018/04/birthday-data/data.json?version=${VERSION}`;
-// const DATA_URL = 'assets/data.json';
 const DPR = Math.min(window.devicePixelRatio, 2);
 const SECOND = 1000;
 const REM = 16;
