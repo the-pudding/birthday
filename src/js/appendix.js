@@ -53,7 +53,7 @@ function resizeGuess() {
 }
 
 function resizeDistribution() {
-	const w = width - MARGIN * 2;
+	const w = width - MARGIN * 3;
 	const h = DISTRIBUTION_HEIGHT - MARGIN * 1.25;
 	scale.distribution.x.range([0, w]).padding(0);
 	scale.distribution.y.range([h, 0]);
@@ -64,16 +64,16 @@ function resizeDistribution() {
 
 	const $svg = $.appendixDistribution.select('svg');
 
-	$svg.at({ width: w + MARGIN * 2, height: DISTRIBUTION_HEIGHT });
+	$svg.at({ width: w + MARGIN * 3, height: DISTRIBUTION_HEIGHT });
 	$svg
 		.selectAll('.day')
 		.at('transform', d => {
 			const x = scale.distribution.x(d.key);
-			const y = h - scale.distribution.y(d.value);
+			const y = scale.distribution.y(d.value);
 			return `translate(${x}, ${y})`;
 		})
 		.select('rect')
-		.at('height', d => scale.distribution.y(d.value))
+		.at('height', d => h - scale.distribution.y(d.value))
 		.at('width', rectW);
 
 	const axisY = d3
@@ -85,10 +85,10 @@ function resizeDistribution() {
 
 	const $y = $svg.select('.axis--y');
 
-	$y.call(axisY).at('transform', `translate(${MARGIN}, ${MARGIN * 0.25})`);
+	$y.call(axisY).at('transform', `translate(${MARGIN * 2}, ${MARGIN * 0.25})`);
 
 	const $x = $svg.select('.axis--x');
-	$x.at('transform', `translate(${MARGIN}, ${h + MARGIN * 1.25})`);
+	$x.at('transform', `translate(${MARGIN * 2}, ${h + MARGIN * 1.25})`);
 	$x.selectAll('.month').at('transform', (d, i) => {
 		const x = scale.distribution.month(i) + monthW / 2;
 		return `translate(${x}, 0)`;
@@ -337,6 +337,7 @@ function setupGuess(data) {
 
 function setupDistribution(data) {
 	const clean = data.map(d => ({ ...d, key: +d.key }));
+	clean.sort((a, b) => d3.ascending(a.key, b.key));
 	const maxDistCount = d3.max(clean, d => d.value);
 	const max = 366;
 
@@ -344,7 +345,7 @@ function setupDistribution(data) {
 	const $axis = $svg.append('g.g-axis');
 	const $g = $svg.append('g');
 
-	$g.at('transform', `translate(${MARGIN}, ${MARGIN * 0.25})`);
+	$g.at('transform', `translate(${MARGIN * 2}, ${MARGIN * 0.25})`);
 
 	scale.distribution.x.domain(d3.range(max));
 	scale.distribution.y.domain([0, maxDistCount]);
