@@ -36,7 +36,7 @@ let mobile = false;
 let playerW = 32;
 let playerH = 70;
 let russellIndex = 319;
-let currentStep = 'appendix';
+let currentStep = 'intro';
 
 let timeout = null;
 
@@ -728,9 +728,9 @@ function setupUser() {
 }
 
 function begin() {
-	// const $btn = getStepButtonEl();
-	// $btn.filter((d, i) => i === 0).text('Let’s do this!');
-	// delayedButton(0);
+	const $btn = getStepButtonEl();
+	$btn.filter((d, i) => i === 0).text('Let’s do this!');
+	delayedButton(0);
 }
 
 function init() {
