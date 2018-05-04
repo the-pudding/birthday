@@ -36,7 +36,7 @@ let mobile = false;
 let playerW = 32;
 let playerH = 70;
 let russellIndex = 319;
-let currentStep = 'intro';
+let currentStep = 'appendix';
 
 let timeout = null;
 
@@ -728,9 +728,9 @@ function setupUser() {
 }
 
 function begin() {
-	const $btn = getStepButtonEl();
-	$btn.filter((d, i) => i === 0).text('Let’s do this!');
-	delayedButton(0);
+	// const $btn = getStepButtonEl();
+	// $btn.filter((d, i) => i === 0).text('Let’s do this!');
+	// delayedButton(0);
 }
 
 function init() {
@@ -747,7 +747,8 @@ function init() {
 
 	d3.loadData(DATA_URL, (err, resp) => {
 		rawData = resp[0];
-		console.log(`last updated: ${rawData.updated}`)
+		rawData.recent.forEach(d => (d.day = Math.max(0, d.day)));
+		console.log(`last updated: ${rawData.updated}`);
 		db.setup();
 		render.setup(begin);
 		setupUser();
